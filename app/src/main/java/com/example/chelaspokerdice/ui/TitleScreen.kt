@@ -1,11 +1,14 @@
 package com.example.chelaspokerdice.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -38,12 +41,20 @@ fun TitleScreen() {
                 fontSize = 20.sp)
         }
 
-        IconButton(onClick = {} ) {
-            Icon(imageVector = Icons.Outlined.AccountCircle,
-                contentDescription = "Profile",
-                        modifier = Modifier
-                        .size(100.dp))
+        Row (modifier = Modifier.padding(top = 10.dp),
+            horizontalArrangement = Arrangement.Center){
+            IconButton(onClick = {} , modifier = Modifier.padding(end = 30.dp)) {
+                Icon(imageVector = Icons.Outlined.AccountCircle,
+                    contentDescription = "Profile",
+                    modifier = Modifier.size(150.dp))
+            }
+            IconButton(onClick = {}) {
+                Icon(imageVector = Icons.Outlined.Info,
+                    contentDescription = "About",
+                    modifier = Modifier.size(150.dp))
+            }
         }
+
     }
 }
 
