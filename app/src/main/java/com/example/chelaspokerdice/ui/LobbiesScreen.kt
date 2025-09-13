@@ -5,12 +5,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun ProfileScreen() {
-    Text("Profile Screen")
+fun LobbiesScreen() {
+    Text("Lobbies Screen")
 }
 
 @Composable
 @Preview
-fun ProfileScreenPreview() {
-    ProfileScreen()
+fun LobbiesScreenPreview() {
+    LobbiesScreen()
 }

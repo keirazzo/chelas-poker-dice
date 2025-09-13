@@ -35,7 +35,7 @@ fun TitleScreen(navController: NavController) {
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 150.dp))
 
-        Button(onClick = {},
+        Button(onClick = {navController.navigate("lobbies")},
             modifier = Modifier
                 .padding(top = 50.dp)
                 .size(250.dp, 75.dp)) {

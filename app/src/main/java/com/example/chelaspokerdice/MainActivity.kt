@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.chelaspokerdice.ui.LobbiesScreen
 import com.example.chelaspokerdice.ui.ProfileScreen
 import com.example.chelaspokerdice.ui.TitleScreen
 import com.example.chelaspokerdice.ui.theme.ChelasPokerDiceTheme
@@ -21,6 +22,7 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController = navController, startDestination = "title", builder = {
                     composable("title"){TitleScreen(navController)}
                     composable ("profile"){ ProfileScreen() }
+                    composable ("lobbies"){ LobbiesScreen() }
                 })
             }
         }
