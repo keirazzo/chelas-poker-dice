@@ -5,6 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -63,7 +67,19 @@ fun AboutScreen() {
 
         Text("Made by: Keira Kabongo-Barazzoli, nr.(unknown)",
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 20.dp))
+            modifier = Modifier.padding(top = 30.dp))
+
+        IconButton(onClick = {
+            val intent = Intent(Intent.ACTION_SENDTO).apply {
+                data = "mailto:01106950@pw.edu.pl".toUri()
+            }
+
+            context.startActivity(intent)
+        }) {
+            Icon(imageVector = Icons.Outlined.Email,
+                contentDescription = "Profile"
+            )
+        }
 
     }
 
