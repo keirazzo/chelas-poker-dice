@@ -52,7 +52,7 @@ fun TitleScreen(navController: NavController) {
                     contentDescription = "Profile",
                     modifier = Modifier.size(150.dp))
             }
-            IconButton(onClick = {}) {
+            IconButton(onClick = {navController.navigate("about")}) {
                 Icon(imageVector = Icons.Outlined.Info,
                     contentDescription = "About",
                     modifier = Modifier.size(150.dp))
