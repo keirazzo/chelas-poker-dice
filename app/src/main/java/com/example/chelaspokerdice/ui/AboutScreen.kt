@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,13 +28,13 @@ fun AboutScreen() {
     Column (modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally){
         Text("About",
             textAlign = TextAlign.Center,
-            fontSize = 40.sp,
+            style = MaterialTheme.typography.displayMedium,
             modifier = Modifier.padding(top = 150.dp)
             )
 
         Text("Welcome to Chelas Poker Dice!",
             textAlign = TextAlign.Center,
-            fontSize = 20.sp,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(top = 30.dp))
 
         Text("To start playing, click on 'START MATCH' and either join or create a new lobby.",
@@ -86,7 +87,7 @@ fun AboutScreen() {
 }
 
 @Composable
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 fun AboutScreenPreview() {
     AboutScreen()
 }

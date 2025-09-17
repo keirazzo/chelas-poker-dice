@@ -13,6 +13,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,22 +26,21 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TitleScreen(navController: NavController) {
     Column (modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally){
-        Text("Chelas Poker Dice",
-            fontSize = 60.sp,
-            lineHeight = 1.2.em,
+        Text("Chelas\nPoker Dice",
+            style = MaterialTheme.typography.displayLarge,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 150.dp))
+            modifier = Modifier.padding(top = 200.dp))
 
         Button(onClick = {navController.navigate("lobbies")},
             modifier = Modifier
                 .padding(top = 50.dp)
                 .size(250.dp, 75.dp)) {
-            Text("START MATCH",
-                fontSize = 20.sp)
+            Text("START MATCH", style = MaterialTheme.typography.bodyLarge)
         }
 
         Row (modifier = Modifier.padding(top = 10.dp),
@@ -63,7 +63,7 @@ fun TitleScreen(navController: NavController) {
 }
 
 @Composable
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 fun TitleScreenPreview() {
     val navController = rememberNavController()
     TitleScreen(navController)
