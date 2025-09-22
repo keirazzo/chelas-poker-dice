@@ -38,6 +38,9 @@ fun LobbiesScreen(navController: NavController) {
                 }
             }
         )
+
+        LobbyInfoCard("Lobby 1", "fjsiroòjreiofjefieosvnjfieodjf", 10, 8)
+        LobbyInfoCard("Lobby 2", "fjsiroòjreiofjefieosvnjfieodjf", 5, 15)
     }
 }
 
