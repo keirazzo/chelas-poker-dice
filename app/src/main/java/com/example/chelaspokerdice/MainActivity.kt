@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.chelaspokerdice.navigation.AppNavHost
 import com.example.chelaspokerdice.ui.AboutScreen
 import com.example.chelaspokerdice.ui.LobbiesScreen
 import com.example.chelaspokerdice.ui.LobbyCreationScreen
@@ -28,14 +29,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ){
-                    val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "title", builder = {
-                        composable("title"){TitleScreen(navController)}
-                        composable ("profile"){ ProfileScreen() }
-                        composable ("lobbies"){ LobbiesScreen(navController) }
-                        composable ("about"){ AboutScreen() }
-                        composable("lobby_creation"){ LobbyCreationScreen() }
-                    })
+                    AppNavHost()
                 }
             }
         }

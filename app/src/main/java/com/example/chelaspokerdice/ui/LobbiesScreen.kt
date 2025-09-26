@@ -14,12 +14,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LobbiesScreen(navController: NavController) {
+fun LobbiesScreen(onNavigate: () -> Unit = { }) {
 
     Column (modifier = Modifier.fillMaxSize()){
         CenterAlignedTopAppBar(
@@ -30,7 +29,7 @@ fun LobbiesScreen(navController: NavController) {
                 Text("Select a lobby")
             },
             actions = {
-                IconButton(onClick = {navController.navigate("lobby_creation")}) {
+                IconButton(onClick = {onNavigate()}) {
                     Icon(
                         imageVector = Icons.Outlined.AddCircle,
                         contentDescription = "create lobby"
@@ -47,6 +46,5 @@ fun LobbiesScreen(navController: NavController) {
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun LobbiesScreenPreview() {
-    val navController = rememberNavController()
-    LobbiesScreen(navController)
+    LobbiesScreen()
 }
