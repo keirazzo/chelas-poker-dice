@@ -13,7 +13,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.chelaspokerdice.R
 
 enum class LobbiesScreenNavigationIntent {
     NavigateToLobby,
@@ -29,13 +31,13 @@ fun LobbiesScreen(onNavigate: (LobbiesScreenNavigationIntent) -> Unit = { }) {
                 containerColor = MaterialTheme.colorScheme.primaryContainer
             ),
             title = {
-                Text("Select a lobby")
+                Text(stringResource(R.string.lobbies_screen_title))
             },
             actions = {
                 IconButton(onClick = {onNavigate(LobbiesScreenNavigationIntent.NavigateToLobbyCreation)}) {
                     Icon(
                         imageVector = Icons.Outlined.AddCircle,
-                        contentDescription = "create lobby"
+                        contentDescription = stringResource(R.string.create_lobby)
                     )
                 }
             }

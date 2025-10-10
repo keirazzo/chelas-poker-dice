@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -18,9 +17,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.chelaspokerdice.R
 
 enum class TitleScreenNavigationIntent {
     NavigateToLobbies,
@@ -31,7 +32,7 @@ enum class TitleScreenNavigationIntent {
 @Composable
 fun TitleScreen(onNavigate: (TitleScreenNavigationIntent) -> Unit = { }) {
     Column (modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally){
-        Text("Chelas\nPoker Dice",
+        Text(stringResource(R.string.app_title),
             style = MaterialTheme.typography.displayLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 200.dp))
@@ -40,7 +41,8 @@ fun TitleScreen(onNavigate: (TitleScreenNavigationIntent) -> Unit = { }) {
             modifier = Modifier
                 .padding(top = 50.dp)
                 .size(250.dp, 75.dp)) {
-            Text("START MATCH", style = MaterialTheme.typography.bodyLarge)
+            Text(text = stringResource(R.string.start_match),
+                style = MaterialTheme.typography.bodyLarge)
         }
 
         Row (modifier = Modifier.padding(top = 10.dp),
@@ -49,12 +51,12 @@ fun TitleScreen(onNavigate: (TitleScreenNavigationIntent) -> Unit = { }) {
             IconButton(onClick = {onNavigate(TitleScreenNavigationIntent.NavigateToProfile)},
                 modifier = Modifier.padding(end = 30.dp)) {
                 Icon(imageVector = Icons.Outlined.AccountCircle,
-                    contentDescription = "Profile",
+                    contentDescription = stringResource(R.string.profile),
                     modifier = Modifier.size(150.dp))
             }
             IconButton(onClick = {onNavigate(TitleScreenNavigationIntent.NavigateToAbout)}) {
                 Icon(imageVector = Icons.Outlined.Info,
-                    contentDescription = "About",
+                    contentDescription = stringResource(R.string.about),
                     modifier = Modifier.size(150.dp))
             }
         }

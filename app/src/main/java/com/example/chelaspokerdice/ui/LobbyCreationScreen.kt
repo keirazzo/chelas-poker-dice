@@ -20,8 +20,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.chelaspokerdice.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,21 +42,21 @@ fun LobbyCreationScreen(onNavigate: () -> Unit = {}){
                 containerColor = MaterialTheme.colorScheme.primaryContainer
             ),
             title = {
-                Text("Create your lobby")
+                Text(stringResource(R.string.lobby_creation_title))
             }
         )
 
         OutlinedTextField(
             value = lobbyName,
             onValueChange = { newText -> lobbyName = newText},
-            label = { Text("Name")},
+            label = { Text(stringResource(R.string.lobby_name_label))},
             modifier = Modifier.fillMaxWidth().padding(30.dp)
         )
 
         OutlinedTextField(
             value = lobbyDescription,
             onValueChange = { newText -> lobbyDescription = newText},
-            label = { Text("Description")},
+            label = { Text(stringResource(R.string.lobby_description_label))},
             modifier = Modifier.fillMaxWidth().padding(start = 30.dp, end = 30.dp)
         )
 
@@ -62,13 +64,13 @@ fun LobbyCreationScreen(onNavigate: () -> Unit = {}){
             OutlinedTextField(
                 value = numberOfRounds,
                 onValueChange = { newText -> numberOfRounds = newText},
-                label = { Text("N° of rounds")},
+                label = { Text(stringResource(R.string.lobby_rounds_label))},
                 modifier = Modifier.weight(1f).padding(30.dp)
             )
             OutlinedTextField(
                 value = numberOfPlayers,
                 onValueChange = { newText -> numberOfPlayers = newText},
-                label = { Text("N° of players")},
+                label = { Text(stringResource(R.string.lobby_players_label))},
                 modifier = Modifier.weight(1f).padding(top = 30.dp, end = 30.dp)
             )
         }
@@ -77,7 +79,8 @@ fun LobbyCreationScreen(onNavigate: () -> Unit = {}){
             modifier = Modifier
                 .padding(top = 50.dp)
                 .size(250.dp, 75.dp)) {
-            Text("START MATCH", style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(R.string.start_match),
+                style = MaterialTheme.typography.bodyLarge)
         }
 
     }

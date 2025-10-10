@@ -14,8 +14,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.chelaspokerdice.R
 
 @Composable
 fun LobbyInfoCard(name: String, description: String, numberOfPlayers: Int, numberOfRounds: Int, onNavigate: () -> Unit = {}) {
@@ -42,11 +44,13 @@ fun LobbyInfoCard(name: String, description: String, numberOfPlayers: Int, numbe
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween){
             Column{
-                Text("0/$numberOfPlayers players", style = MaterialTheme.typography.bodySmall)
-                Text("$numberOfRounds rounds", style = MaterialTheme.typography.bodySmall)
+                Text(stringResource(R.string.players_count, 0, numberOfPlayers),
+                    style = MaterialTheme.typography.bodySmall)
+                Text(stringResource(R.string.rounds_count, numberOfRounds),
+                    style = MaterialTheme.typography.bodySmall)
             }
             Button(onClick = {onNavigate()}) {
-                Text("JOIN")
+                Text(stringResource(R.string.join_button))
             }
         }
 

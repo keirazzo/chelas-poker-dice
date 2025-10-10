@@ -1,3 +1,28 @@
 <resources>
     <string name="app_name">Chelas Poker Dice</string>
+    <string name="app_title">Chelas\nPoker Dice</string>
+    <string name="start_match">START MATCH</string>
+    <string name="profile">Profile</string>
+    <string name="about">About</string>
+
+    <string name="about_welcome">Welcome to Chelas Poker Dice!</string>
+    <string name="about_start_match">To start playing, click on \'START MATCH\' and either join or create a new lobby.</string>
+    <string name="about_gameplay_desc">Once the game starts, the goal is to roll the highest-ranking poker hand among all players within a single round. You get three re-rolls in total.</string>
+    <string name="about_dice_combinations">Dice combinations are ranked in descending order of strength as follows: Five of a Kind, Four of a Kind, Full House, Straight, Three of a Kind, Two Pair, One Pair, and finally Bust</string>
+    <string name="about_full_rules">Full gameplay rules</string>
+    <string name="about_made_by">Made by: Keira Kabongo-Barazzoli, nr.54213</string>
+    <string name="about_email_desc">Email</string>
+
+    <string name="lobbies_screen_title">Select a lobby</string>
+    <string name="create_lobby">Create lobby</string>
+
+    <string name="lobby_creation_title">Create your lobby</string>
+    <string name="lobby_name_label">Name</string>
+    <string name="lobby_description_label">Description</string>
+    <string name="lobby_rounds_label">N° of rounds</string>
+    <string name="lobby_players_label">N° of players</string>
+
+    <string name="players_count">%1$d/%2$d players</string>
+    <string name="rounds_count">%1$d rounds</string>
+    <string name="join_button">JOIN</string>
 </resources>

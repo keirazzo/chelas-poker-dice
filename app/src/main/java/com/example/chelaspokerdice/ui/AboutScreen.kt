@@ -16,45 +16,43 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
+import com.example.chelaspokerdice.R
 
 @Composable
 fun AboutScreen() {
     Column (modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally){
-        Text("About",
+        Text(stringResource(R.string.about),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.displayMedium,
             modifier = Modifier.padding(top = 150.dp)
             )
 
-        Text("Welcome to Chelas Poker Dice!",
+        Text(stringResource(R.string.about_welcome),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(top = 30.dp))
 
-        Text("To start playing, click on 'START MATCH' and either join or create a new lobby.",
+        Text(stringResource(R.string.about_start_match),
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 10.dp, bottom = 5.dp))
 
-        Text("Once the game starts, the goal is to roll the highest-ranking poker " +
-                "hand among all players within a single round. You get three re-rolls in total.",
+        Text(stringResource(R.string.about_gameplay_desc),
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(5.dp))
 
-        Text("Dice combinations are ranked in descending order of strength as follows: Five of " +
-                "a Kind, Four of a Kind, Full House, Straight, Three of a Kind, Two Pair, One Pair, " +
-                "and finally Bust ",
+        Text(stringResource(R.string.about_dice_combinations),
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(5.dp))
 
         val context = LocalContext.current
 
-        Text("Full gameplay rules",
+        Text(stringResource(R.string.about_full_rules),
             color = Color.Blue,
             textDecoration = TextDecoration.Underline,
             textAlign = TextAlign.Center,
@@ -66,7 +64,7 @@ fun AboutScreen() {
             context.startActivity(intent)
         })
 
-        Text("Made by: Keira Kabongo-Barazzoli, nr.(unknown)",
+        Text(stringResource(R.string.about_made_by),
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 30.dp))
 
