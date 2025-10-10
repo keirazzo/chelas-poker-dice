@@ -6,7 +6,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.chelaspokerdice.ui.AboutScreen
 import com.example.chelaspokerdice.ui.LobbiesScreen
+import com.example.chelaspokerdice.ui.LobbiesScreenNavigationIntent
 import com.example.chelaspokerdice.ui.LobbyCreationScreen
+import com.example.chelaspokerdice.ui.LobbyScreen
 import com.example.chelaspokerdice.ui.ProfileScreen
 import com.example.chelaspokerdice.ui.TitleScreen
 import com.example.chelaspokerdice.ui.TitleScreenNavigationIntent
@@ -39,10 +41,19 @@ fun AppNavHost(){
         composable (AppScreen.Profile.name){ ProfileScreen() }
 
         composable (AppScreen.Lobbies.name){ LobbiesScreen(
-            onNavigate = { navController.navigate(AppScreen.LobbyCreation.name) }
-        ) }
+           onNavigate = { intent -> when (intent) {
+               LobbiesScreenNavigationIntent.NavigateToLobbyCreation -> navController.navigate(AppScreen.LobbyCreation.name)
+               LobbiesScreenNavigationIntent.NavigateToLobby -> navController.navigate(AppScreen.Lobby.name)
+           } }
+
+
+        )}
 
         composable (AppScreen.About.name){ AboutScreen() }
-        composable(AppScreen.LobbyCreation.name){ LobbyCreationScreen() }
+        composable(AppScreen.LobbyCreation.name){ LobbyCreationScreen(
+            onNavigate = { navController.navigate(AppScreen.Lobby.name) }
+        ) }
+
+        composable(AppScreen.Lobby.name){ LobbyScreen() }
     })
 }

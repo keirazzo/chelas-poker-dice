@@ -18,7 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LobbyInfoCard(name: String, description: String, numberOfPlayers: Int, numberOfRounds: Int) {
+fun LobbyInfoCard(name: String, description: String, numberOfPlayers: Int, numberOfRounds: Int, onNavigate: () -> Unit = {}) {
     Card (
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -45,7 +45,7 @@ fun LobbyInfoCard(name: String, description: String, numberOfPlayers: Int, numbe
                 Text("0/$numberOfPlayers players", style = MaterialTheme.typography.bodySmall)
                 Text("$numberOfRounds rounds", style = MaterialTheme.typography.bodySmall)
             }
-            Button(onClick = {}) {
+            Button(onClick = {onNavigate()}) {
                 Text("JOIN")
             }
         }

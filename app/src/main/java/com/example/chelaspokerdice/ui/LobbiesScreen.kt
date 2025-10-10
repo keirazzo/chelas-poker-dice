@@ -15,10 +15,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
-
+enum class LobbiesScreenNavigationIntent {
+    NavigateToLobby,
+    NavigateToLobbyCreation
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LobbiesScreen(onNavigate: () -> Unit = { }) {
+fun LobbiesScreen(onNavigate: (LobbiesScreenNavigationIntent) -> Unit = { }) {
 
     Column (modifier = Modifier.fillMaxSize()){
         CenterAlignedTopAppBar(
@@ -29,7 +32,7 @@ fun LobbiesScreen(onNavigate: () -> Unit = { }) {
                 Text("Select a lobby")
             },
             actions = {
-                IconButton(onClick = {onNavigate()}) {
+                IconButton(onClick = {onNavigate(LobbiesScreenNavigationIntent.NavigateToLobbyCreation)}) {
                     Icon(
                         imageVector = Icons.Outlined.AddCircle,
                         contentDescription = "create lobby"
@@ -38,8 +41,10 @@ fun LobbiesScreen(onNavigate: () -> Unit = { }) {
             }
         )
 
-        LobbyInfoCard("Lobby 1", "fjsiroòjreiofjefieosvnjfieodjf", 10, 8)
-        LobbyInfoCard("Lobby 2", "fjsiroòjreiofjefieosvnjfieodjf", 5, 15)
+        LobbyInfoCard("Lobby 1", "fjsiroòjreiofjefieosvnjfieodjf", 10, 8,
+            { onNavigate(LobbiesScreenNavigationIntent.NavigateToLobby) })
+        LobbyInfoCard("Lobby 2", "fjsiroòjreiofjefieosvnjfieodjf", 5, 15,
+            { onNavigate(LobbiesScreenNavigationIntent.NavigateToLobby) })
     }
 }
 

@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LobbyCreationScreen(){
+fun LobbyCreationScreen(onNavigate: () -> Unit = {}){
 
     var lobbyName by remember { mutableStateOf("") }
     var lobbyDescription by remember { mutableStateOf("") }
@@ -73,7 +73,7 @@ fun LobbyCreationScreen(){
             )
         }
 
-        Button(onClick = {},
+        Button(onClick = {onNavigate()},
             modifier = Modifier
                 .padding(top = 50.dp)
                 .size(250.dp, 75.dp)) {
