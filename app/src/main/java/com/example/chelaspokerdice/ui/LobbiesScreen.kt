@@ -12,18 +12,28 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chelaspokerdice.R
+import com.example.chelaspokerdice.domain.Player
+import com.example.chelaspokerdice.viewmodel.LobbiesViewModel
+import com.example.chelaspokerdice.viewmodel.LobbiesViewModelFactory
 
-enum class LobbiesScreenNavigationIntent {
-    NavigateToLobby,
-    NavigateToLobbyCreation
+sealed class LobbiesScreenNavigationIntent {
+    data class NavigateToLobby(val lobbyId: String) : LobbiesScreenNavigationIntent()
+    data object NavigateToLobbyCreation: LobbiesScreenNavigationIntent()
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LobbiesScreen(onNavigate: (LobbiesScreenNavigationIntent) -> Unit = { }) {
+
+    val viewModel = viewModel<LobbiesViewModel>(factory = LobbiesViewModelFactory())
+    val lobbies by viewModel.lobbies.collectAsState()
 
     Column (modifier = Modifier.fillMaxSize()){
         CenterAlignedTopAppBar(
@@ -43,10 +53,15 @@ fun LobbiesScreen(onNavigate: (LobbiesScreenNavigationIntent) -> Unit = { }) {
             }
         )
 
-        LobbyInfoCard("Lobby 1", "fjsiroòjreiofjefieosvnjfieodjf", 10, 8,
-            { onNavigate(LobbiesScreenNavigationIntent.NavigateToLobby) })
-        LobbyInfoCard("Lobby 2", "fjsiroòjreiofjefieosvnjfieodjf", 5, 15,
-            { onNavigate(LobbiesScreenNavigationIntent.NavigateToLobby) })
+        LaunchedEffect(key1 = true) {
+            viewModel.loadLobbies()
+        }
+        lobbies.forEach { lobby ->
+            LobbyInfoCard(lobby.name, lobby.description, lobby.numberOfPlayers, lobby.maxNumberOfPlayers, lobby.numberOfRounds, {
+                val currentPlayer = Player("TemporaryPlayer")
+                viewModel.joinLobby(lobby, currentPlayer)
+                onNavigate(LobbiesScreenNavigationIntent.NavigateToLobby(lobby.id)) })
+        }
     }
 }
 

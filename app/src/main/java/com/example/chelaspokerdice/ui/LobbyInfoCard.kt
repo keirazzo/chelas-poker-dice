@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.example.chelaspokerdice.R
 
 @Composable
-fun LobbyInfoCard(name: String, description: String, numberOfPlayers: Int, numberOfRounds: Int, onNavigate: () -> Unit = {}) {
+fun LobbyInfoCard(name: String, description: String, numberOfPlayers: Int, maxNumberOfPlayers: Int, numberOfRounds: Int, onJoinClicked: () -> Unit = {}) {
     Card (
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -44,12 +44,12 @@ fun LobbyInfoCard(name: String, description: String, numberOfPlayers: Int, numbe
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween){
             Column{
-                Text(stringResource(R.string.players_count, 0, numberOfPlayers),
+                Text(stringResource(R.string.players_count, numberOfPlayers, maxNumberOfPlayers),
                     style = MaterialTheme.typography.bodySmall)
                 Text(stringResource(R.string.rounds_count, numberOfRounds),
                     style = MaterialTheme.typography.bodySmall)
             }
-            Button(onClick = {onNavigate()}) {
+            Button(onClick = {onJoinClicked()}) {
                 Text(stringResource(R.string.join_button))
             }
         }
@@ -61,5 +61,5 @@ fun LobbyInfoCard(name: String, description: String, numberOfPlayers: Int, numbe
 @Composable
 @Preview()
 fun LobbyInfoCardPreview(){
-    LobbyInfoCard("Lobby 1", "First lobby made", 6, 5)
+    LobbyInfoCard("Lobby 1", "First lobby made", 1, 6, 5)
 }

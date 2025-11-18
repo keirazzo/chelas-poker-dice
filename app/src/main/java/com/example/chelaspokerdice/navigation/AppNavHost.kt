@@ -1,9 +1,11 @@
 package com.example.chelaspokerdice.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.chelaspokerdice.ui.AboutScreen
 import com.example.chelaspokerdice.ui.LobbiesScreen
 import com.example.chelaspokerdice.ui.LobbiesScreenNavigationIntent
@@ -43,7 +45,7 @@ fun AppNavHost(){
         composable (AppScreen.Lobbies.name){ LobbiesScreen(
            onNavigate = { intent -> when (intent) {
                LobbiesScreenNavigationIntent.NavigateToLobbyCreation -> navController.navigate(AppScreen.LobbyCreation.name)
-               LobbiesScreenNavigationIntent.NavigateToLobby -> navController.navigate(AppScreen.Lobby.name)
+               is LobbiesScreenNavigationIntent.NavigateToLobby -> navController.navigate("${AppScreen.Lobby.name}/${intent.lobbyId}")
            } }
 
 
@@ -54,6 +56,14 @@ fun AppNavHost(){
             onNavigate = { navController.navigate(AppScreen.Lobby.name) }
         ) }
 
-        composable(AppScreen.Lobby.name){ LobbyScreen() }
+        composable("${ AppScreen.Lobby.name}/{lobbyId}",
+            listOf(
+                navArgument("lobbyId"){
+                    type = NavType.StringType
+                    nullable = false
+                }
+            )){ backStackEntry ->
+            val lobbyId = backStackEntry.arguments?.getString("lobbyId")
+                LobbyScreen(lobbyId = lobbyId?: "error_id") }
     })
 }

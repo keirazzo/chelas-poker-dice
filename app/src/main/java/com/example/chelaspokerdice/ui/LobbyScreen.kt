@@ -5,12 +5,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun LobbyScreen (){
-    Text("LOBBY SCREEN");
+fun LobbyScreen (lobbyId : String){
+    Text("LOBBY SCREEN " + lobbyId);
 }
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun LobbyScreenPreview(){
-    LobbyScreen()
+    LobbyScreen("1")
 }
