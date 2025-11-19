@@ -4,9 +4,11 @@ import com.example.chelaspokerdice.domain.Player
 
 interface LobbiesRepository {
     suspend fun getLobbies(): List<Lobby>
+    suspend fun getLobby(lobbyId: String): Lobby?
     suspend fun addLobby(lobby: Lobby)
     suspend fun joinLobby(lobby: Lobby, player: Player)
     suspend fun leaveLobby(lobby: Lobby, player: Player)
+
 }
 
 class FakeLobbiesRepository : LobbiesRepository {
@@ -17,7 +19,11 @@ class FakeLobbiesRepository : LobbiesRepository {
     )
 
     override suspend fun getLobbies(): List<Lobby> = lobbies
+
+    override suspend fun getLobby(lobbyId: String): Lobby? = lobbies.find { lobby -> lobby.id == lobbyId }
+
     override suspend fun addLobby(lobby: Lobby) { lobbies.add(lobby)}
+
     override suspend fun joinLobby(lobby: Lobby, player: Player) {
         val index = lobbies.indexOf(lobby)
         if (index != -1){

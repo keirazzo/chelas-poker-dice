@@ -16,13 +16,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.chelaspokerdice.R
-import com.example.chelaspokerdice.domain.Player
 import com.example.chelaspokerdice.viewmodel.LobbiesViewModel
-import com.example.chelaspokerdice.viewmodel.LobbiesViewModelFactory
 
 sealed class LobbiesScreenNavigationIntent {
     data class NavigateToLobby(val lobbyId: String) : LobbiesScreenNavigationIntent()
@@ -32,13 +31,17 @@ sealed class LobbiesScreenNavigationIntent {
 @Composable
 fun LobbiesScreen(onNavigate: (LobbiesScreenNavigationIntent) -> Unit = { }) {
 
-    val viewModel = viewModel<LobbiesViewModel>(factory = LobbiesViewModelFactory())
+    val viewModel = hiltViewModel<LobbiesViewModel>()
     val lobbies by viewModel.lobbies.collectAsState()
 
     Column (modifier = Modifier.fillMaxSize()){
         CenterAlignedTopAppBar(
-            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                scrolledContainerColor = Color.Unspecified,
+                navigationIconContentColor = Color.Unspecified,
+                titleContentColor = Color.Unspecified,
+                actionIconContentColor = Color.Unspecified
             ),
             title = {
                 Text(stringResource(R.string.lobbies_screen_title))
@@ -57,10 +60,10 @@ fun LobbiesScreen(onNavigate: (LobbiesScreenNavigationIntent) -> Unit = { }) {
             viewModel.loadLobbies()
         }
         lobbies.forEach { lobby ->
-            LobbyInfoCard(lobby.name, lobby.description, lobby.numberOfPlayers, lobby.maxNumberOfPlayers, lobby.numberOfRounds, {
-                val currentPlayer = Player("TemporaryPlayer")
-                viewModel.joinLobby(lobby, currentPlayer)
-                onNavigate(LobbiesScreenNavigationIntent.NavigateToLobby(lobby.id)) })
+            LobbyInfoCard(lobby.name, lobby.description, lobby.numberOfPlayers, lobby.maxNumberOfPlayers, lobby.numberOfRounds) {
+                viewModel.joinLobby(lobby)
+                onNavigate(LobbiesScreenNavigationIntent.NavigateToLobby(lobby.id))
+            }
         }
     }
 }

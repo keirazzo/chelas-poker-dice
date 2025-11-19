@@ -63,7 +63,7 @@ fun AppNavHost(){
                     nullable = false
                 }
             )){ backStackEntry ->
-            val lobbyId = backStackEntry.arguments?.getString("lobbyId")
-                LobbyScreen(lobbyId = lobbyId?: "error_id") }
+                LobbyScreen(onNavigate = { navController.navigate(AppScreen.Lobbies.name)})
+            }
     })
 }

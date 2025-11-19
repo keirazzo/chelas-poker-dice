@@ -8,17 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.chelaspokerdice.navigation.AppNavHost
-import com.example.chelaspokerdice.ui.AboutScreen
-import com.example.chelaspokerdice.ui.LobbiesScreen
-import com.example.chelaspokerdice.ui.LobbyCreationScreen
-import com.example.chelaspokerdice.ui.ProfileScreen
-import com.example.chelaspokerdice.ui.TitleScreen
 import com.example.chelaspokerdice.ui.theme.ChelasPokerDiceTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

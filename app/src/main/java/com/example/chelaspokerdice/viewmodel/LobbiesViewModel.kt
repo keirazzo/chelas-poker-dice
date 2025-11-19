@@ -3,25 +3,31 @@ package com.example.chelaspokerdice.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chelaspokerdice.domain.Lobby
-import com.example.chelaspokerdice.domain.Player
 import com.example.chelaspokerdice.repository.LobbiesRepository
+import com.example.chelaspokerdice.repository.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LobbiesViewModel(private val repository: LobbiesRepository): ViewModel() {
+@HiltViewModel
+class LobbiesViewModel @Inject constructor(
+    private val lobbiesRepository: LobbiesRepository,
+    private val userRepository: UserRepository
+): ViewModel() {
     private val _lobbies = MutableStateFlow<List<Lobby>>(emptyList())
     val lobbies: StateFlow<List<Lobby>> = _lobbies
 
     fun loadLobbies(){
         viewModelScope.launch {
-            _lobbies.value = repository.getLobbies().filter { !it.isFull() }
+            _lobbies.value = lobbiesRepository.getLobbies().filter { !it.isFull() }
         }
     }
 
-    fun joinLobby(lobby: Lobby, player: Player){
+    fun joinLobby(lobby: Lobby){
         viewModelScope.launch {
-            repository.joinLobby(lobby, player)
+            lobbiesRepository.joinLobby(lobby, userRepository.getPlayer())
             loadLobbies()
         }
     }

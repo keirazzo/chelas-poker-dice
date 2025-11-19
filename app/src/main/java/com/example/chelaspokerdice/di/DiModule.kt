@@ -1,0 +1,28 @@
+package com.example.chelaspokerdice.di
+
+import com.example.chelaspokerdice.repository.FakeLobbiesRepository
+import com.example.chelaspokerdice.repository.FakeUserRepository
+import com.example.chelaspokerdice.repository.LobbiesRepository
+import com.example.chelaspokerdice.repository.UserRepository
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object DiModule {
+
+    @Provides
+    @Singleton
+    fun provideLobbiesRepository(): LobbiesRepository {
+        return FakeLobbiesRepository()
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserRepository(): UserRepository {
+        return FakeUserRepository()
+    }
+}

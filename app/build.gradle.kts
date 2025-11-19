@@ -2,8 +2,12 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
 }
-
+hilt {
+    enableAggregatingTask = false
+}
 android {
     namespace = "com.example.chelaspokerdice"
     compileSdk = 36
@@ -61,6 +65,10 @@ dependencies {
     implementation("androidx.compose.ui:ui-text-google-fonts:1.9.1")
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4")
+    implementation(libs.hilt.core)
+    implementation(libs.androidx.hilt.navigation.compose)
+    ksp(libs.hilt.compiler)
+    ksp(libs.androidx.hilt.compiler)
 
 
 
