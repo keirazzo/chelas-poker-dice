@@ -31,4 +31,20 @@ class LobbiesViewModel @Inject constructor(
             loadLobbies()
         }
     }
+
+    fun createLobby(name: String, description: String, numberOfPlayers: Int, numberOfRounds: Int): String{
+        var newLobbyId = ""
+        viewModelScope.launch {
+            val lobby = Lobby(
+                name,
+                description,
+                1,
+                numberOfPlayers,
+                numberOfRounds,
+                listOf(userRepository.getPlayer()))
+            lobbiesRepository.addLobby(lobby)
+            newLobbyId = lobby.id
+        }
+        return newLobbyId
+    }
 }

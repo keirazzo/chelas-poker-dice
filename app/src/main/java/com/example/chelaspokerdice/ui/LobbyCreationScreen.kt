@@ -23,15 +23,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.chelaspokerdice.R
 import com.example.chelaspokerdice.domain.Lobby.Companion.isDescriptionValid
 import com.example.chelaspokerdice.domain.Lobby.Companion.isMaxNumberOfPlayersValid
 import com.example.chelaspokerdice.domain.Lobby.Companion.isNameValid
 import com.example.chelaspokerdice.domain.Lobby.Companion.isNumberOfRoundsValid
+import com.example.chelaspokerdice.viewmodel.LobbiesViewModel
 
+data class NavigateToLobby(val lobbyId: String)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LobbyCreationScreen(onNavigate: () -> Unit = {}){
+fun LobbyCreationScreen(onNavigate: (NavigateToLobby) -> Unit = {}){
+    val viewModel = hiltViewModel<LobbiesViewModel>()
 
     var lobbyName by remember { mutableStateOf("") }
     var lobbyDescription by remember { mutableStateOf("") }
@@ -138,7 +142,9 @@ fun LobbyCreationScreen(onNavigate: () -> Unit = {}){
             )
         }
 
-        Button(onClick = {onNavigate()},
+        Button(onClick = {
+            val lobbyId = viewModel.createLobby(lobbyName, lobbyDescription, numberOfPlayers.toIntOrNull()!!, numberOfRounds.toIntOrNull()!!)
+            onNavigate(NavigateToLobby(lobbyId))},
             modifier = Modifier
                 .padding(top = 50.dp)
                 .size(250.dp, 75.dp)) {

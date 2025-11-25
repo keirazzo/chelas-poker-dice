@@ -2,6 +2,8 @@ package com.example.chelaspokerdice.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AddCircle
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -59,12 +61,15 @@ fun LobbiesScreen(onNavigate: (LobbiesScreenNavigationIntent) -> Unit = { }) {
         LaunchedEffect(key1 = true) {
             viewModel.loadLobbies()
         }
-        lobbies.forEach { lobby ->
-            LobbyInfoCard(lobby.name, lobby.description, lobby.numberOfPlayers, lobby.maxNumberOfPlayers, lobby.numberOfRounds) {
-                viewModel.joinLobby(lobby)
-                onNavigate(LobbiesScreenNavigationIntent.NavigateToLobby(lobby.id))
+        LazyColumn {
+            items(lobbies) { lobby ->
+                LobbyInfoCard(lobby.name, lobby.description, lobby.numberOfPlayers, lobby.maxNumberOfPlayers, lobby.numberOfRounds) {
+                    viewModel.joinLobby(lobby)
+                    onNavigate(LobbiesScreenNavigationIntent.NavigateToLobby(lobby.id))
+                }
             }
         }
+
     }
 }
 

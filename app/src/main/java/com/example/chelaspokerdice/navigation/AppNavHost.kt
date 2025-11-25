@@ -53,7 +53,7 @@ fun AppNavHost(){
 
         composable (AppScreen.About.name){ AboutScreen() }
         composable(AppScreen.LobbyCreation.name){ LobbyCreationScreen(
-            onNavigate = { navController.navigate(AppScreen.Lobby.name) }
+            onNavigate = { intent -> navController.navigate("${AppScreen.Lobby.name}/${intent.lobbyId}") }
         ) }
 
         composable("${ AppScreen.Lobby.name}/{lobbyId}",
