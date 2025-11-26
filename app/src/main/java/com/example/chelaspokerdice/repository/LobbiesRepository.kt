@@ -13,7 +13,7 @@ interface LobbiesRepository {
 
 class FakeLobbiesRepository : LobbiesRepository {
     private val lobbies = mutableListOf(
-        Lobby("Lobby 1", "first created lobby", 1, 3, 5, listOf(Player("Alice"))),
+        Lobby("Lobby 1", "first created lobby", 2, 3, 5, listOf(Player("Alice"), Player("Max"))),
         Lobby("Lobby 2", "second created lobby", 1, 3, 5, listOf(Player("Jack"))),
         Lobby("Full Lobby", "full lobby that should not show on screen", 6, 6, 5, listOf(Player("Alice")))
     )

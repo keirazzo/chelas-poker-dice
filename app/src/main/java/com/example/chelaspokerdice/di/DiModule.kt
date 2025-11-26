@@ -1,7 +1,9 @@
 package com.example.chelaspokerdice.di
 
+import com.example.chelaspokerdice.repository.FakeGameRepository
 import com.example.chelaspokerdice.repository.FakeLobbiesRepository
 import com.example.chelaspokerdice.repository.FakeUserRepository
+import com.example.chelaspokerdice.repository.GameRepository
 import com.example.chelaspokerdice.repository.LobbiesRepository
 import com.example.chelaspokerdice.repository.UserRepository
 import dagger.Module
@@ -24,5 +26,11 @@ object DiModule {
     @Singleton
     fun provideUserRepository(): UserRepository {
         return FakeUserRepository()
+    }
+
+    @Provides
+    @Singleton
+    fun provideGameRepository(): GameRepository {
+        return FakeGameRepository()
     }
 }

@@ -7,10 +7,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.chelaspokerdice.ui.AboutScreen
+import com.example.chelaspokerdice.ui.GameScreen
 import com.example.chelaspokerdice.ui.LobbiesScreen
 import com.example.chelaspokerdice.ui.LobbiesScreenNavigationIntent
 import com.example.chelaspokerdice.ui.LobbyCreationScreen
 import com.example.chelaspokerdice.ui.LobbyScreen
+import com.example.chelaspokerdice.ui.LobbyScreenNavigationIntent
 import com.example.chelaspokerdice.ui.ProfileScreen
 import com.example.chelaspokerdice.ui.TitleScreen
 import com.example.chelaspokerdice.ui.TitleScreenNavigationIntent
@@ -63,7 +65,22 @@ fun AppNavHost(){
                     nullable = false
                 }
             )){ backStackEntry ->
-                LobbyScreen(onNavigate = { navController.navigate(AppScreen.Lobbies.name)})
+                LobbyScreen(onNavigate = { intent -> when (intent){
+                    LobbyScreenNavigationIntent.NavigateToLobbies -> navController.navigate(AppScreen.Lobbies.name)
+                    is LobbyScreenNavigationIntent.NavigateToGame -> navController.navigate("${AppScreen.Game.name}/${intent.gameId}")
+                }
+                    })
             }
+
+        composable ("${ AppScreen.Game.name}/{gameId}",
+            listOf(
+                navArgument("gameId"){
+                    type = NavType.StringType
+                    nullable = false
+                }
+            )
+            ){ backStackEntry ->
+            GameScreen()
+        }
     })
 }

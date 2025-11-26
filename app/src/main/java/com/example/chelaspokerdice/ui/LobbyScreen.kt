@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -26,16 +27,31 @@ import androidx.compose.ui.unit.dp
 import com.example.chelaspokerdice.viewmodel.LobbyViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.chelaspokerdice.R
+import com.example.chelaspokerdice.viewmodel.LobbyState
 
+sealed class LobbyScreenNavigationIntent {
+    data class NavigateToGame(val gameId: String): LobbyScreenNavigationIntent()
+    data object NavigateToLobbies: LobbyScreenNavigationIntent()
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LobbyScreen (onNavigate: () -> Unit = {}){
+fun LobbyScreen (onNavigate: (LobbyScreenNavigationIntent) -> Unit = {}){
     val viewModel = hiltViewModel<LobbyViewModel>()
     val lobby by viewModel.lobby.collectAsState()
+    val lobbyState by viewModel.state.collectAsState()
 
     BackHandler {
         viewModel.leaveLobby()
-        onNavigate()
+        onNavigate(LobbyScreenNavigationIntent.NavigateToLobbies)
+    }
+
+    LaunchedEffect(lobbyState) {
+        if (lobbyState is LobbyState.Full){
+            val gameId = viewModel.createGame(lobby?.name ?: "", lobby?.players ?: listOf(),
+                lobby?.numberOfRounds ?: 0
+            )
+            onNavigate(LobbyScreenNavigationIntent.NavigateToGame(gameId))
+        }
     }
 
     Column (modifier = Modifier.fillMaxSize()) {
@@ -78,7 +94,7 @@ fun LobbyScreen (onNavigate: () -> Unit = {}){
         }
         Button(onClick = {
             viewModel.leaveLobby()
-            onNavigate()},
+            onNavigate(LobbyScreenNavigationIntent.NavigateToLobbies)},
             modifier = Modifier.align(Alignment.CenterHorizontally).size(250.dp, 75.dp) ) {
                 Text(stringResource(R.string.leave_lobby), style = MaterialTheme.typography.bodyLarge)
             }
