@@ -31,8 +31,15 @@
     <string name="invalid_number_of_players">Please enter a number between 2 and 6.</string>
     <string name="invalid_number_of_rounds">Please enter a number between 1 and 60.</string>
 
-    <string name="loading">Loading...</string>
+    <string name="loading">Loading…</string>
     <string name="leave_lobby">LEAVE</string>
     <string name="lobby_number_of_rounds">Number of rounds: %1$d</string>
     <string name="lobby_players">Players: %1$d/%2$d</string>
+
+    <string name="playing">Playing: %1$s</string>
+    <string name="current_round">Round %1$d/%2$d</string>
+    <string name="rerolls_left">%1$d rerolls left</string>
+    <string name="roll">ROLL</string>
+    <string name="reroll">REROLL</string>
+    <string name="confirm">CONFIRM</string>
 </resources>

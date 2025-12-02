@@ -9,6 +9,8 @@ data class Game (
     val currentPlayer: Player = Player(""),
     val currentRound: Int = 0,
     val rerolls: Int = 0,
-    val id: String = UUID.randomUUID().toString()
+    val id: String = UUID.randomUUID().toString(),
+    val keptDice: List<Dice> = listOf<Dice>(),
+    val rerollDice: List<Dice> = listOf<Dice>(),
 ){
 }
