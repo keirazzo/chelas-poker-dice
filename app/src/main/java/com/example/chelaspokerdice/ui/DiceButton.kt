@@ -18,8 +18,8 @@ import androidx.compose.ui.platform.LocalResources
 
 @SuppressLint("DiscouragedApi")
 @Composable
-fun Dice(symbol: String){
-    Button(onClick = {}, shape = RectangleShape, contentPadding = PaddingValues(0.dp),
+fun DiceButton(symbol: String, onClick: () -> Unit){
+    Button(onClick = onClick, shape = RectangleShape, contentPadding = PaddingValues(0.dp),
         colors = ButtonDefaults.buttonColors( containerColor = Color.Transparent, contentColor = Color.Gray),
     ) {
         Image(painter = painterResource(LocalResources.current.getIdentifier(symbol, "drawable", LocalContext.current.packageName)),

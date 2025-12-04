@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,12 +31,14 @@ import com.example.chelaspokerdice.domain.Lobby.Companion.isMaxNumberOfPlayersVa
 import com.example.chelaspokerdice.domain.Lobby.Companion.isNameValid
 import com.example.chelaspokerdice.domain.Lobby.Companion.isNumberOfRoundsValid
 import com.example.chelaspokerdice.viewmodel.LobbiesViewModel
+import kotlinx.coroutines.launch
 
 data class NavigateToLobby(val lobbyId: String)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LobbyCreationScreen(onNavigate: (NavigateToLobby) -> Unit = {}){
     val viewModel = hiltViewModel<LobbiesViewModel>()
+    val scope = rememberCoroutineScope()
 
     var lobbyName by remember { mutableStateOf("") }
     var lobbyDescription by remember { mutableStateOf("") }
@@ -143,8 +146,15 @@ fun LobbyCreationScreen(onNavigate: (NavigateToLobby) -> Unit = {}){
         }
 
         Button(onClick = {
-            val lobbyId = viewModel.createLobby(lobbyName, lobbyDescription, numberOfPlayers.toIntOrNull()!!, numberOfRounds.toIntOrNull()!!)
-            onNavigate(NavigateToLobby(lobbyId))},
+            scope.launch{
+                val lobbyId = viewModel.createLobby(
+                    lobbyName,
+                    lobbyDescription,
+                    numberOfPlayers.toIntOrNull()!!,
+                    numberOfRounds.toIntOrNull()!!
+                )
+                onNavigate(NavigateToLobby(lobbyId))
+            }},
             modifier = Modifier
                 .padding(top = 50.dp)
                 .size(250.dp, 75.dp)) {

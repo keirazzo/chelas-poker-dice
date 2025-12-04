@@ -15,23 +15,41 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.chelaspokerdice.R
-import com.example.chelaspokerdice.domain.Dice
-import com.example.chelaspokerdice.domain.Player
+import com.example.chelaspokerdice.viewmodel.GameViewModel
+import com.example.chelaspokerdice.viewmodel.TurnState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GameScreen(onNavigate: ()-> Unit = {}){
-//    val viewModel = hiltViewModel<GameViewModel>()
-//    val game = viewModel.loadGame()
+    val viewModel = hiltViewModel<GameViewModel>()
+    val _game by viewModel.game.collectAsState()
+    val turnState by viewModel.turnState.collectAsState()
 
-    Column (modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.secondaryContainer)){
+    if (_game ==null){
+        Column(modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(stringResource(R.string.loading))
+        }
+        return
+    }
+
+    val game = _game!!
+
+    Column (modifier = Modifier
+        .fillMaxSize()
+        .background(MaterialTheme.colorScheme.secondaryContainer)){
         CenterAlignedTopAppBar(
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -41,59 +59,66 @@ fun GameScreen(onNavigate: ()-> Unit = {}){
                 actionIconContentColor = Color.Unspecified
             ),
             title = {
-                Text("Lobby 1") //game.name
+                Text(game.name)
             },
         )
 
-        Row(modifier = Modifier.fillMaxWidth().padding(start= 10.dp, end= 10.dp, top= 10.dp), horizontalArrangement = Arrangement.Absolute.SpaceBetween){
-            Text(stringResource(R.string.playing, "Keira"))
-            Text(stringResource(R.string.current_round, 1, 2))
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 10.dp, end = 10.dp, top = 10.dp), horizontalArrangement = Arrangement.Absolute.SpaceBetween){
+            Text(stringResource(R.string.playing, game.currentPlayer.name))
+            Text(stringResource(R.string.current_round, game.currentRound, game.numberOfRounds))
         }
 
-        Text(stringResource(R.string.rerolls_left, 2),Modifier.padding(start= 10.dp))
-
+        if (turnState is TurnState.Rerolls) {
+            Text(
+                stringResource(R.string.rerolls_left, game.rerolls),
+                Modifier.padding(start = 10.dp)
+            )
+        }
 
         Column(Modifier.padding(10.dp)){
-            PlayerHand(Player("Keira", listOf(
-                Dice(9, "nine"),
-                Dice(10, "ten"),
-                Dice(10, "ten"),
-                Dice(10, "ten"),
-                Dice(10, "ten")
-            )))
-            PlayerHand(Player("Alice"))
-        }
-        Button(onClick = {}, modifier = Modifier.align(Alignment.CenterHorizontally).size(250.dp, 75.dp)) {
-            Text(stringResource(R.string.roll), style = MaterialTheme.typography.bodyLarge)
+            game.players.forEach { player -> PlayerHand(player) }
         }
 
-        Row (horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth() ){
-            Dice("king")
-            Dice("queen")
-            Dice("jack")
-            Dice("ten")
-            Dice("nine")
-
-        }
-
-
-        Row (horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth() ){
-            Dice("queen")
-            Dice("jack")
-            Dice("ten")
-            Dice("nine")
-            Dice("ace")
-
-        }
-
-        Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth().padding(top=10.dp)){
-            Button(onClick = {}, modifier = Modifier.padding(end=10.dp)) {
-                Text(stringResource(R.string.reroll))
-            }
-            Button(onClick = {}) {
-                Text(stringResource(R.string.confirm))
+        if (turnState is TurnState.FirstRoll){
+            Button(onClick = {viewModel.rollDice()}, modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .size(250.dp, 75.dp)) {
+                Text(stringResource(R.string.roll), style = MaterialTheme.typography.bodyLarge)
             }
         }
+
+        if (turnState is TurnState.Rerolls || turnState is TurnState.NoRerolls){
+
+            if (turnState is TurnState.Rerolls){
+                Row (horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth() ){
+                    game.rerollDice.forEach { dice -> DiceButton(dice.symbol, { viewModel.toggleDice(dice) }) }
+                }
+            }
+
+            Row (horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth() ){
+                game.keptDice.forEach { dice -> DiceButton(dice.symbol, { viewModel.toggleDice(dice) }) }
+
+            }
+            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp)){
+                if (turnState is TurnState.Rerolls){
+                    Button(onClick = {viewModel.rerollDice()}, modifier = Modifier.padding(end=10.dp)) {
+                        Text(stringResource(R.string.reroll))
+                    }
+                }
+
+                Button(onClick = {viewModel.confirmHand()}) {
+                    Text(stringResource(R.string.confirm))
+                }
+            }
+        }
+
+
+
+
 
 
     }

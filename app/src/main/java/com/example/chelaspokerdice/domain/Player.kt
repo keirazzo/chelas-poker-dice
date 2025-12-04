@@ -1,6 +1,6 @@
 package com.example.chelaspokerdice.domain
 
-class Player (
+data class Player (
     val name: String,
     val currentHand: List<Dice> = emptyList<Dice>(),
     val currentHandName: String = ""

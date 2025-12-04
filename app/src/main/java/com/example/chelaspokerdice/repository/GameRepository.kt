@@ -1,19 +1,26 @@
 package com.example.chelaspokerdice.repository
 
 import com.example.chelaspokerdice.domain.Game
-import com.example.chelaspokerdice.domain.Player
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 interface GameRepository {
-    suspend fun getGame(gameId: String): Game?
-    suspend fun addGame(game: Game)
+    fun getGame(gameId: String): Flow<Game?>
+    suspend fun saveGame(game: Game)
 }
 
 class FakeGameRepository : GameRepository {
-    private val games = mutableListOf<Game>()
+    private val games = mutableMapOf<String, MutableStateFlow<Game?>>()
 
-    override suspend fun getGame(gameId: String): Game? = games.find { game -> game.id == gameId }
+    override fun getGame(gameId: String): Flow<Game?> {
+        return games.getOrPut(gameId){ MutableStateFlow(null)}
+    }
 
-    override suspend fun addGame(game: Game) { games.add(game) }
+    override suspend fun saveGame(game: Game) {
+        val flow = games.getOrPut(game.id) {MutableStateFlow(null)}
+        flow.value = game
+    }
+
 
 
 }

@@ -39,11 +39,11 @@ fun PlayerHand(player: Player) {
 @Preview(showBackground = true, showSystemUi = true)
 fun PlayerHandPreview(){
     val hand = listOf(
-        Dice(9, "nine"),
-        Dice(10, "ten"),
-        Dice(10, "ten"),
-        Dice(10, "ten"),
-        Dice(10, "ten")
+        Dice(9, "nine", 1),
+        Dice(10, "ten", 2),
+        Dice(10, "ten", 3),
+        Dice(10, "ten", 4),
+        Dice(10, "ten", 5)
     )
     PlayerHand(player = Player("Keira", hand))
 }

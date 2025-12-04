@@ -11,8 +11,11 @@ import com.example.chelaspokerdice.repository.LobbiesRepository
 import com.example.chelaspokerdice.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,42 +34,26 @@ class LobbyViewModel @Inject constructor(
     private val _state = MutableStateFlow<LobbyState>(LobbyState.Waiting)
     val state: StateFlow<LobbyState> = _state.asStateFlow()
     private val lobbyId: String = savedStateHandle.get<String>("lobbyId") ?: ""
-    private val _lobby = MutableStateFlow<Lobby?>(null)
-    val lobby: StateFlow<Lobby?> = _lobby
-    init {
-        if (lobbyId.isNotEmpty()) {
-            loadLobby()
+    val lobby: StateFlow<Lobby?> = lobbiesRepository.getLobbyStream(lobbyId)
+        .onEach { lobby ->
+            if (lobby?.isFull() == true) _state.value = LobbyState.Full
+            else if (lobby != null) _state.value = LobbyState.Waiting
         }
-    }
-    fun loadLobby(){
-        viewModelScope.launch {
-            _lobby.value = lobbiesRepository.getLobby(lobbyId)
-            if (lobby.value?.isFull() ?: false)_state.value = LobbyState.Full
-        }
-    }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
 
     fun leaveLobby(){
         viewModelScope.launch {
-            _lobby.value?.let { currentLobby ->
-                lobbiesRepository.leaveLobby(currentLobby, userRepository.getPlayer())
-            }
+            lobby.value?.let { currentLobby -> lobbiesRepository.leaveLobby(currentLobby, userRepository.getPlayer()) }
         }
     }
 
-    fun createGame(name: String, players: List<Player>, numberOfRounds: Int): String{
-        var newGameId = ""
-        viewModelScope.launch {
-            val game = Game(
-                name,
-                players,
-                numberOfRounds,
-                players.elementAt(0),
-                1,
-                2
-            )
-            newGameId = game.id
-            gameRepository.addGame(game)
-        }
-        return newGameId
+    suspend fun createGame(name: String, players: List<Player>, numberOfRounds: Int): String{
+        val game = Game(name, players, numberOfRounds, players.elementAt(0))
+        gameRepository.saveGame(game)
+        return game.id
     }
 }
