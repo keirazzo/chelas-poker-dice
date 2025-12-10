@@ -21,7 +21,7 @@ class FakeLobbiesRepository : LobbiesRepository {
     private val lobbies = mutableMapOf<String, MutableStateFlow<Lobby>>()
     init {
         listOf(
-            Lobby("Lobby 1", "first created lobby", 2, 3, 5, listOf(Player("Alice"), Player("Max"))),
+            Lobby("Lobby 1", "first created lobby", 2, 3, 2, listOf(Player("Alice"), Player("Max"))),
             Lobby("Lobby 2", "second created lobby", 1, 3, 5, listOf(Player("Jack"))),
             Lobby("Full Lobby", "full lobby that should not show on screen", 6, 6, 5, listOf(Player("Alice")))
         ).forEach { lobby -> lobbies[lobby.id] = MutableStateFlow(lobby) }

@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.chelaspokerdice.R
+import com.example.chelaspokerdice.viewmodel.GameState
 import com.example.chelaspokerdice.viewmodel.GameViewModel
 import com.example.chelaspokerdice.viewmodel.TurnState
 
@@ -34,6 +35,7 @@ fun GameScreen(onNavigate: ()-> Unit = {}){
     val viewModel = hiltViewModel<GameViewModel>()
     val _game by viewModel.game.collectAsState()
     val turnState by viewModel.turnState.collectAsState()
+    val gameState by viewModel.gameState.collectAsState()
 
     if (_game ==null){
         Column(modifier = Modifier.fillMaxSize(),
@@ -47,82 +49,131 @@ fun GameScreen(onNavigate: ()-> Unit = {}){
 
     val game = _game!!
 
-    Column (modifier = Modifier
-        .fillMaxSize()
-        .background(MaterialTheme.colorScheme.secondaryContainer)){
-        CenterAlignedTopAppBar(
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                scrolledContainerColor = Color.Unspecified,
-                navigationIconContentColor = Color.Unspecified,
-                titleContentColor = Color.Unspecified,
-                actionIconContentColor = Color.Unspecified
-            ),
-            title = {
-                Text(game.name)
-            },
-        )
-
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 10.dp, end = 10.dp, top = 10.dp), horizontalArrangement = Arrangement.Absolute.SpaceBetween){
-            Text(stringResource(R.string.playing, game.currentPlayer.name))
-            Text(stringResource(R.string.current_round, game.currentRound, game.numberOfRounds))
-        }
-
-        if (turnState is TurnState.Rerolls) {
-            Text(
-                stringResource(R.string.rerolls_left, game.rerolls),
-                Modifier.padding(start = 10.dp)
+    if (gameState is GameState.PlayingRound) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.secondaryContainer)
+        ) {
+            CenterAlignedTopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    scrolledContainerColor = Color.Unspecified,
+                    navigationIconContentColor = Color.Unspecified,
+                    titleContentColor = Color.Unspecified,
+                    actionIconContentColor = Color.Unspecified
+                ),
+                title = {
+                    Text(game.name)
+                },
             )
-        }
 
-        Column(Modifier.padding(10.dp)){
-            game.players.forEach { player -> PlayerHand(player) }
-        }
-
-        if (turnState is TurnState.FirstRoll){
-            Button(onClick = {viewModel.rollDice()}, modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .size(250.dp, 75.dp)) {
-                Text(stringResource(R.string.roll), style = MaterialTheme.typography.bodyLarge)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 10.dp, end = 10.dp, top = 10.dp),
+                horizontalArrangement = Arrangement.Absolute.SpaceBetween
+            ) {
+                Text(stringResource(R.string.playing, game.currentPlayer.name))
+                Text(stringResource(R.string.current_round, game.currentRound, game.numberOfRounds))
             }
-        }
 
-        if (turnState is TurnState.Rerolls || turnState is TurnState.NoRerolls){
+            if (turnState is TurnState.Rerolls) {
+                Text(
+                    stringResource(R.string.rerolls_left, game.rerolls),
+                    Modifier.padding(start = 10.dp)
+                )
+            }
 
-            if (turnState is TurnState.Rerolls){
-                Row (horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth() ){
-                    game.rerollDice.forEach { dice -> DiceButton(dice.symbol, { viewModel.toggleDice(dice) }) }
+            Column(Modifier.padding(10.dp)) {
+                game.players.forEach { player -> PlayerHand(player) }
+            }
+
+            if (turnState is TurnState.FirstRoll) {
+                Button(
+                    onClick = { viewModel.rollDice() }, modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .size(250.dp, 75.dp)
+                ) {
+                    Text(stringResource(R.string.roll), style = MaterialTheme.typography.bodyLarge)
                 }
             }
 
-            Row (horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth() ){
-                game.keptDice.forEach { dice -> DiceButton(dice.symbol, { viewModel.toggleDice(dice) }) }
+            if (turnState is TurnState.Rerolls || turnState is TurnState.NoRerolls) {
 
-            }
-            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 10.dp)){
-                if (turnState is TurnState.Rerolls){
-                    Button(onClick = {viewModel.rerollDice()}, modifier = Modifier.padding(end=10.dp)) {
-                        Text(stringResource(R.string.reroll))
+                if (turnState is TurnState.Rerolls) {
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        game.rerollDice.forEach { dice ->
+                            DiceButton(
+                                dice.symbol,
+                                { viewModel.toggleDice(dice) })
+                        }
                     }
                 }
 
-                Button(onClick = {viewModel.confirmHand()}) {
-                    Text(stringResource(R.string.confirm))
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    game.keptDice.forEach { dice ->
+                        DiceButton(
+                            dice.symbol,
+                            { viewModel.toggleDice(dice) })
+                    }
+
+                }
+                Row(
+                    horizontalArrangement = Arrangement.Center, modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp)
+                ) {
+                    if (turnState is TurnState.Rerolls) {
+                        Button(
+                            onClick = { viewModel.rerollDice() },
+                            modifier = Modifier.padding(end = 10.dp)
+                        ) {
+                            Text(stringResource(R.string.reroll))
+                        }
+                    }
+
+                    Button(onClick = { viewModel.confirmHand() }) {
+                        Text(stringResource(R.string.confirm))
+                    }
                 }
             }
+
+
         }
+    }
 
+    if (gameState is GameState.EndOfRound){
+        Column( modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primaryContainer),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center){
+            Text("End of round ${game.currentRound}", style = MaterialTheme.typography.headlineLarge)
+            val sortedPlayers = game.players.sortedByDescending{ 0 }
+            val roundWinner = sortedPlayers.first()
+            Text("Winner: ${roundWinner.name}", style = MaterialTheme.typography.headlineSmall)
 
+            sortedPlayers.forEach { player ->  PlayerHand(player)}
+        }
+    }
 
+    if (gameState is GameState.EndOfGame){
+        Column (modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primaryContainer),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center){
+            val sortedPlayers = game.players.sortedByDescending { it.score }
+            Text("Winner: ${sortedPlayers.first().name}", style = MaterialTheme.typography.headlineLarge)
 
-
-
+            sortedPlayers.forEach { player -> Text("${player.score}    ${player.name}") }
+        }
     }
 }
+
 
 @Composable
 @Preview(showBackground = true, showSystemUi = true)

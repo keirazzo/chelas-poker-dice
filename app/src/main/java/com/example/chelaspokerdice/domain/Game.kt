@@ -14,6 +14,8 @@ data class Game (
     val rerollDice: List<Dice> = List(5){ index -> Dice(0, "", index + 1).roll()},
 ){
 
+    fun isRoundFinished(): Boolean = currentPlayer == players.last()
+    fun isGameFinished(): Boolean = currentRound == numberOfRounds
     fun rollDice(): Game {
         val rolled = rerollDice.map { it.roll() }
         return this.copy(rerollDice = rolled)
@@ -33,14 +35,13 @@ data class Game (
 
     fun finishTurn(): Game {
         val allDice = keptDice + rerollDice
-        val currentPlayerIndex = players.indexOf(currentPlayer)
+        var currentPlayerIndex = players.indexOf(currentPlayer)
         val updatedPlayers = players.toMutableList().apply {
             this[currentPlayerIndex] = currentPlayer.copy(currentHand = allDice)
         }
 
-        if(currentPlayer == players.last()){
-            return finishRound()
-        }
+        if(currentPlayer == players.last()) currentPlayerIndex = currentPlayerIndex.dec()
+
 
         return this.copy(
             currentPlayer = players.elementAt(currentPlayerIndex + 1),
@@ -50,6 +51,27 @@ data class Game (
     }
 
     fun finishRound(): Game {
-        return this
+        val resetPlayers = players.map { it.copy(currentHand = listOf()) }
+        val shiftedPlayers = resetPlayers.drop(1) + resetPlayers.first()
+
+        return this.copy(
+            currentRound = currentRound.inc(),
+            players = shiftedPlayers,
+            currentPlayer = shiftedPlayers.first(),
+            rerollDice = List(5){ index -> Dice(0, "", index + 1).roll()},
+            keptDice = listOf()
+        )
+    }
+
+    fun updatePlayerScore(player: Player): Game {
+        val updatedPlayers = players.toMutableList().apply {
+            this[players.indexOf(player)] = player.copy(score = player.score.inc())
+        }
+
+        return this.copy( players = updatedPlayers)
+    }
+
+    fun getRoundWinner(): Player {
+        return players.maxBy { player -> player.currentHand.sumOf { dice -> dice.number }}
     }
 }
