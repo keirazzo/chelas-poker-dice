@@ -2,6 +2,16 @@ package com.example.chelaspokerdice.domain
 
 import java.util.UUID
 
+enum class HandType(val rank: Int, val type: String){
+    BUST(1, "Bust"),
+    PAIR(2, "Pair"),
+    TWO_PAIR(3, "Two Pair"),
+    THREE_OF_A_KIND(4, "Three of a kind"),
+    STRAIGHT(5, "Straight"),
+    FULL_HOUSE(6, "Full House"),
+    FOUR_OF_A_KIND(7, "Four of a kind"),
+    FIVE_OF_A_KIND(8, "Five of a kind")
+}
 data class Game (
     val name: String = "",
     val players: List<Player> = listOf<Player>(),
@@ -72,6 +82,88 @@ data class Game (
     }
 
     fun getRoundWinner(): Player {
-        return players.maxBy { player -> player.currentHand.sumOf { dice -> dice.number }}
+        return players.maxWith(Comparator { p1, p2 ->
+            compareHands(p1, p2)
+        })
+    }
+
+    fun analyzeHand(hand: List<Dice>): List<Int>{
+        val values: List<Int> = hand.map { it.number }.sortedDescending()
+        val counts: Map<Int, Int> = values.groupBy { it }.mapValues { it.value.size }
+        val sortedCounts = counts.entries.sortedByDescending { it.value * 100 + it.key }
+        val maxCount = sortedCounts.first().value
+        val countSize = counts.size
+        val strength = mutableListOf<Int>()
+
+        when (maxCount){
+            5 -> {
+                strength.add(HandType.FIVE_OF_A_KIND.rank)
+                strength.add(sortedCounts.first().key)
+            }
+
+            4 -> {
+                strength.add(HandType.FOUR_OF_A_KIND.rank)
+                strength.add(sortedCounts[0].key)
+                strength.add(sortedCounts[1].key)
+            }
+
+            3 -> {
+                if (countSize == 2){
+                    strength.add(HandType.FULL_HOUSE.rank)
+                    strength.add(sortedCounts[0].key)
+                    strength.add(sortedCounts[1].key)
+                } else {
+                    strength.add(HandType.THREE_OF_A_KIND.rank)
+                    strength.add(sortedCounts[0].key)
+                    strength.addAll(values.filter { it != sortedCounts[0].key }.sortedDescending())
+                }
+            }
+
+            2 -> {
+                if (countSize == 3) {
+                    strength.add(HandType.TWO_PAIR.rank)
+                    strength.addAll(sortedCounts.filter { it.value == 2 }.map { it.key }.sortedDescending())
+                    strength.addAll(sortedCounts.filter { it.value == 1 }.map { it.key })
+                } else {
+                    strength.add(HandType.PAIR.rank)
+                    strength.add(sortedCounts[0].key)
+                    strength.addAll(values.filter { it != sortedCounts[0].key }.sortedDescending())
+                }
+            }
+
+            else -> {
+                val uniqueSortedValues = values.distinct().sortedDescending()
+                if (uniqueSortedValues.size == 5 && (uniqueSortedValues.first() - uniqueSortedValues.last() == 4)){
+                    strength.add(HandType.STRAIGHT.rank)
+                    strength.add(uniqueSortedValues.first())
+                }
+                else {
+                    strength.add(HandType.BUST.rank)
+                    strength.addAll(values.sortedDescending())
+                }
+            }
+        }
+
+        return strength
+    }
+
+    fun getHandType(hand: List<Dice>): HandType {
+        val strength = analyzeHand(hand)
+        val rank = strength.firstOrNull() ?: HandType.BUST.rank
+        return HandType.entries.firstOrNull { it.rank == rank } ?: HandType.BUST
+    }
+
+    fun compareHands(player1: Player, player2: Player): Int{
+        val hand1 = analyzeHand(player1.currentHand)
+        val hand2 = analyzeHand(player2.currentHand)
+
+        val max = maxOf(hand1.size, hand2.size)
+        val padded1 = hand1 + List(max - hand1.size){0}
+        val padded2 = hand2 + List(max - hand2.size){0}
+
+        return padded1.zip(padded2).firstOrNull { it.first != it.second }?.let {
+            it.first - it.second
+        }?: 0
+
     }
 }

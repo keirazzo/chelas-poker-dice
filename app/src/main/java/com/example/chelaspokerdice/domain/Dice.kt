@@ -1,7 +1,7 @@
 package com.example.chelaspokerdice.domain
 
 enum class Values(val number: Int, val symbol: String){
-    ACE(1, "ace"),
+    ACE(14, "ace"),
     KING(13, "king"),
     QUEEN(12, "queen"),
     JACK(11, "jack"),

@@ -99,7 +99,17 @@ fun GameScreen(onNavigate: ()-> Unit = {}){
                 }
             }
 
+            val currentHand = game.keptDice + game.rerollDice
+            val handType = game.getHandType(currentHand)
+
             if (turnState is TurnState.Rerolls || turnState is TurnState.NoRerolls) {
+
+                Text(
+                    text = handType.type,
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(10.dp).align(Alignment.CenterHorizontally),
+                    color = MaterialTheme.colorScheme.primary
+                )
 
                 if (turnState is TurnState.Rerolls) {
                     Row(
@@ -154,7 +164,9 @@ fun GameScreen(onNavigate: ()-> Unit = {}){
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center){
             Text("End of round ${game.currentRound}", style = MaterialTheme.typography.headlineLarge)
-            val sortedPlayers = game.players.sortedByDescending{ 0 }
+            val sortedPlayers = game.players.sortedWith(Comparator { p1, p2 ->
+                game.compareHands(p1, p2)
+            }).reversed()
             val roundWinner = sortedPlayers.first()
             Text("Winner: ${roundWinner.name}", style = MaterialTheme.typography.headlineSmall)
 
