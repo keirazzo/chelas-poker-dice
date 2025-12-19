@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "995465944902",
+    "project_id": "chelas-poker-dice",
+    "storage_bucket": "chelas-poker-dice.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:995465944902:android:e4b768d7f5892340158f47",
+        "android_client_info": {
+          "package_name": "com.example.chelaspokerdice"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5bHEJZkzn7Jt_H0G6YdGJFYqfeo1CjaI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

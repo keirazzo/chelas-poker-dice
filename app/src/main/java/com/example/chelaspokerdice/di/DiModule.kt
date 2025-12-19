@@ -1,11 +1,12 @@
 package com.example.chelaspokerdice.di
 
 import com.example.chelaspokerdice.repository.FakeGameRepository
-import com.example.chelaspokerdice.repository.FakeLobbiesRepository
 import com.example.chelaspokerdice.repository.FakeUserRepository
+import com.example.chelaspokerdice.repository.FirestoreLobbiesRepository
 import com.example.chelaspokerdice.repository.GameRepository
 import com.example.chelaspokerdice.repository.LobbiesRepository
 import com.example.chelaspokerdice.repository.UserRepository
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,8 +19,8 @@ object DiModule {
 
     @Provides
     @Singleton
-    fun provideLobbiesRepository(): LobbiesRepository {
-        return FakeLobbiesRepository()
+    fun provideLobbiesRepository( db: FirebaseFirestore): LobbiesRepository {
+        return FirestoreLobbiesRepository(db)
     }
 
     @Provides
