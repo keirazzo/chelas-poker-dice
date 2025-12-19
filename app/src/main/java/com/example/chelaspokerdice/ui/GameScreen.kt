@@ -17,6 +17,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -164,9 +165,16 @@ fun GameScreen(onNavigate: ()-> Unit = {}){
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center){
             Text("End of round ${game.currentRound}", style = MaterialTheme.typography.headlineLarge)
-            val sortedPlayers = game.players.sortedWith(Comparator { p1, p2 ->
-                game.compareHands(p1, p2)
-            }).reversed()
+            val sortedPlayers = remember(game.players) {
+                val playersWithHands = game.players.filter { it.currentHand.isNotEmpty() }
+                if (playersWithHands.isNotEmpty()) {
+                    game.players.sortedWith(Comparator { p1, p2 ->
+                        game.compareHands(p1, p2)
+                    }).reversed()
+                }else {
+                   game.players
+                }
+            }
             val roundWinner = sortedPlayers.first()
             Text("Winner: ${roundWinner.name}", style = MaterialTheme.typography.headlineSmall)
 

@@ -10,9 +10,9 @@ enum class Values(val number: Int, val symbol: String){
 
 }
 data class Dice(
-    val number: Int,
-    val symbol: String,
-    val id: Int
+    val number: Int = 0,
+    val symbol: String = "",
+    val id: Int = 0
 ) {
 
     fun roll(): Dice{

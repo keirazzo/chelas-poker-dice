@@ -1,5 +1,6 @@
 package com.example.chelaspokerdice.domain
 
+import com.google.firebase.firestore.Exclude
 import java.util.UUID
 
 enum class HandType(val rank: Int, val type: String){
@@ -81,6 +82,7 @@ data class Game (
         return this.copy( players = updatedPlayers)
     }
 
+    @Exclude
     fun getRoundWinner(): Player {
         return players.maxWith(Comparator { p1, p2 ->
             compareHands(p1, p2)
@@ -91,7 +93,7 @@ data class Game (
         val values: List<Int> = hand.map { it.number }.sortedDescending()
         val counts: Map<Int, Int> = values.groupBy { it }.mapValues { it.value.size }
         val sortedCounts = counts.entries.sortedByDescending { it.value * 100 + it.key }
-        val maxCount = sortedCounts.first().value
+        val maxCount = sortedCounts.firstOrNull()?.value ?: 0
         val countSize = counts.size
         val strength = mutableListOf<Int>()
 
@@ -147,6 +149,7 @@ data class Game (
         return strength
     }
 
+    @Exclude
     fun getHandType(hand: List<Dice>): HandType {
         val strength = analyzeHand(hand)
         val rank = strength.firstOrNull() ?: HandType.BUST.rank

@@ -2,6 +2,7 @@ package com.example.chelaspokerdice.di
 
 import com.example.chelaspokerdice.repository.FakeGameRepository
 import com.example.chelaspokerdice.repository.FakeUserRepository
+import com.example.chelaspokerdice.repository.FireStoreGameRepository
 import com.example.chelaspokerdice.repository.FirestoreLobbiesRepository
 import com.example.chelaspokerdice.repository.GameRepository
 import com.example.chelaspokerdice.repository.LobbiesRepository
@@ -31,7 +32,7 @@ object DiModule {
 
     @Provides
     @Singleton
-    fun provideGameRepository(): GameRepository {
-        return FakeGameRepository()
+    fun provideGameRepository(db: FirebaseFirestore): GameRepository {
+        return FireStoreGameRepository(db)
     }
 }
