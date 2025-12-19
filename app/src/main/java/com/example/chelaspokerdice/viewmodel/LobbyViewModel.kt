@@ -52,8 +52,10 @@ class LobbyViewModel @Inject constructor(
     }
 
     suspend fun createGame(name: String, players: List<Player>, numberOfRounds: Int): String{
+        val currentLobby = lobby.value!!
         val game = Game(name, players, numberOfRounds, players.elementAt(0))
         gameRepository.saveGame(game)
+        lobbiesRepository.startGame(currentLobby.id)
         return game.id
     }
 }

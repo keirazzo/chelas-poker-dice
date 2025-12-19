@@ -9,7 +9,8 @@ data class Lobby(
     val maxNumberOfPlayers: Int = 2,
     val numberOfRounds: Int = 1,
     val players: List<Player> = listOf(),
-    val id: String = UUID.randomUUID().toString()
+    val id: String = UUID.randomUUID().toString(),
+    val gameStarted: Boolean = false
 ){
     fun isEmpty(): Boolean = numberOfPlayers == 0;
     fun isFull(): Boolean = numberOfPlayers == maxNumberOfPlayers;

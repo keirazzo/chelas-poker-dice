@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.chelaspokerdice.ui.AboutScreen
 import com.example.chelaspokerdice.ui.GameScreen
+import com.example.chelaspokerdice.ui.GameScreenNavigationIntent
 import com.example.chelaspokerdice.ui.LobbiesScreen
 import com.example.chelaspokerdice.ui.LobbiesScreenNavigationIntent
 import com.example.chelaspokerdice.ui.LobbyCreationScreen
@@ -80,7 +81,10 @@ fun AppNavHost(){
                 }
             )
             ){ backStackEntry ->
-            GameScreen()
+            GameScreen(onNavigate = { intent -> when (intent){
+                GameScreenNavigationIntent.NavigateToTitle -> navController.navigate(AppScreen.Title.name)
+                is GameScreenNavigationIntent.NavigateToLobby -> navController.popBackStack()
+            } })
         }
     })
 }

@@ -117,4 +117,9 @@ class GameViewModel @Inject constructor(
             gameRepository.saveGame(updatedGame)
         }
     }
+
+    fun leaveGame(){
+        val currentGame = game.value ?: return
+
+    }
 }

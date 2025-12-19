@@ -19,7 +19,7 @@ class LobbiesViewModel @Inject constructor(
     private val userRepository: UserRepository
 ): ViewModel() {
     val lobbies: StateFlow<List<Lobby>> = lobbiesRepository.getLobbies().map {
-        lobbiesList -> lobbiesList.filter { !it.isFull()}
+        lobbiesList -> lobbiesList.filter { !it.isFull() && !it.gameStarted}
     }
         .stateIn(
             scope = viewModelScope,

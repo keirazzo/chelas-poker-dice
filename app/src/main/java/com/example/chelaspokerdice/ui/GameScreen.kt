@@ -1,5 +1,6 @@
 package com.example.chelaspokerdice.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,16 +9,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,9 +35,13 @@ import com.example.chelaspokerdice.viewmodel.GameState
 import com.example.chelaspokerdice.viewmodel.GameViewModel
 import com.example.chelaspokerdice.viewmodel.TurnState
 
+sealed class GameScreenNavigationIntent{
+    data object NavigateToTitle: GameScreenNavigationIntent()
+    data object NavigateToLobby: GameScreenNavigationIntent()
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GameScreen(onNavigate: ()-> Unit = {}){
+fun GameScreen(onNavigate: (GameScreenNavigationIntent)-> Unit = {}){
     val viewModel = hiltViewModel<GameViewModel>()
     val _game by viewModel.game.collectAsState()
     val turnState by viewModel.turnState.collectAsState()
@@ -49,6 +58,36 @@ fun GameScreen(onNavigate: ()-> Unit = {}){
     }
 
     val game = _game!!
+
+    var showExitDialog by remember { mutableStateOf(false) }
+
+    BackHandler (enabled = true){
+        showExitDialog = true
+    }
+
+    if (showExitDialog) {
+        AlertDialog(
+            onDismissRequest = { showExitDialog = false },
+            title = { Text("Leave Match?") },
+            text = { Text("If you leave the game now, you will be removed from the lobby and lose your progress") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showExitDialog = false
+                        viewModel.leaveGame()
+                        onNavigate(GameScreenNavigationIntent.NavigateToTitle)
+                    }
+                ) {
+                    Text("Leave")
+                }
+            },
+            dismissButton = {
+                OutlinedButton(onClick = { showExitDialog = false }) {
+                    Text("Stay")
+                }
+            }
+        )
+    }
 
     if (gameState is GameState.PlayingRound) {
         Column(
@@ -108,7 +147,9 @@ fun GameScreen(onNavigate: ()-> Unit = {}){
                 Text(
                     text = handType.type,
                     style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.padding(10.dp).align(Alignment.CenterHorizontally),
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .align(Alignment.CenterHorizontally),
                     color = MaterialTheme.colorScheme.primary
                 )
 
@@ -161,7 +202,9 @@ fun GameScreen(onNavigate: ()-> Unit = {}){
     }
 
     if (gameState is GameState.EndOfRound){
-        Column( modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primaryContainer),
+        Column( modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.primaryContainer),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center){
             Text("End of round ${game.currentRound}", style = MaterialTheme.typography.headlineLarge)
@@ -183,13 +226,24 @@ fun GameScreen(onNavigate: ()-> Unit = {}){
     }
 
     if (gameState is GameState.EndOfGame){
-        Column (modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primaryContainer),
+        Column (modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.primaryContainer),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center){
             val sortedPlayers = game.players.sortedByDescending { it.score }
             Text("Winner: ${sortedPlayers.first().name}", style = MaterialTheme.typography.headlineLarge)
 
             sortedPlayers.forEach { player -> Text("${player.score}    ${player.name}") }
+
+            Row {
+                Button(onClick = { onNavigate(GameScreenNavigationIntent.NavigateToTitle) }) {
+                    Text("Leave lobby")
+                }
+                Button(onClick = { onNavigate(GameScreenNavigationIntent.NavigateToLobby) }) {
+                    Text("New game")
+                }
+            }
         }
     }
 }
