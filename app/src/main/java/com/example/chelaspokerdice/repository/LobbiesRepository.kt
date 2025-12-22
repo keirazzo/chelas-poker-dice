@@ -74,7 +74,7 @@ class FirestoreLobbiesRepository @Inject constructor( private val db: FirebaseFi
     override suspend fun leaveLobby(lobby: Lobby, player: Player) {
         val lobbyId = lobbies.document(lobby.id)
         val updatedPlayers = lobby.players.filter { it.name != player.name }
-        if (lobby.isEmpty()){
+        if (updatedPlayers.isEmpty()){
             lobbyId.delete().await()
         } else {
             lobbies.document(lobby.id).update(

@@ -31,6 +31,14 @@ class LobbyViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
+    private val _user = MutableStateFlow<Player?>(null)
+    val user = _user.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            _user.value = userRepository.getPlayer()
+        }
+    }
     private val _state = MutableStateFlow<LobbyState>(LobbyState.Waiting)
     val state: StateFlow<LobbyState> = _state.asStateFlow()
     private val lobbyId: String = savedStateHandle.get<String>("lobbyId") ?: ""

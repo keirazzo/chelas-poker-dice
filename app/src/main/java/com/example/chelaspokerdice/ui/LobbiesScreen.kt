@@ -1,5 +1,6 @@
 package com.example.chelaspokerdice.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,10 +28,14 @@ import com.example.chelaspokerdice.viewmodel.LobbiesViewModel
 sealed class LobbiesScreenNavigationIntent {
     data class NavigateToLobby(val lobbyId: String) : LobbiesScreenNavigationIntent()
     data object NavigateToLobbyCreation: LobbiesScreenNavigationIntent()
+    data object NavigateToTitle: LobbiesScreenNavigationIntent()
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LobbiesScreen(onNavigate: (LobbiesScreenNavigationIntent) -> Unit = { }) {
+    BackHandler (enabled = true){
+        onNavigate(LobbiesScreenNavigationIntent.NavigateToTitle)
+    }
 
     val viewModel = hiltViewModel<LobbiesViewModel>()
     val lobbies by viewModel.lobbies.collectAsState()

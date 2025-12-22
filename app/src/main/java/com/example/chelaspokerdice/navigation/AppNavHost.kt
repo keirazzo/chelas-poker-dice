@@ -49,6 +49,7 @@ fun AppNavHost(){
            onNavigate = { intent -> when (intent) {
                LobbiesScreenNavigationIntent.NavigateToLobbyCreation -> navController.navigate(AppScreen.LobbyCreation.name)
                is LobbiesScreenNavigationIntent.NavigateToLobby -> navController.navigate("${AppScreen.Lobby.name}/${intent.lobbyId}")
+               LobbiesScreenNavigationIntent.NavigateToTitle -> navController.navigate(AppScreen.Title.name)
            } }
 
 
