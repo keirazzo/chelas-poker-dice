@@ -1,7 +1,6 @@
 package com.example.chelaspokerdice.domain
 
 import com.google.firebase.firestore.Exclude
-import java.util.UUID
 
 enum class HandType(val rank: Int, val type: String){
     BUST(1, "Bust"),
@@ -15,17 +14,19 @@ enum class HandType(val rank: Int, val type: String){
 }
 data class Game (
     val name: String = "",
-    val players: List<Player> = listOf<Player>(),
+    val players: List<Player> = listOf(),
     val numberOfRounds: Int = 0,
     val currentPlayer: Player = Player(""),
     val currentRound: Int = 1,
     val rerolls: Int = 0,
-    val id: String = UUID.randomUUID().toString(),
-    val keptDice: List<Dice> = listOf<Dice>(),
+    val id: String = "",
+    val state: String = "PLAYING",
+    val turnPhase: String = "FIRST_ROLL",
+    val keptDice: List<Dice> = listOf(),
     val rerollDice: List<Dice> = List(5){ index -> Dice(0, "", index + 1).roll()},
 ){
 
-    fun isRoundFinished(): Boolean = currentPlayer == players.last()
+    fun isRoundFinished(): Boolean = currentPlayer.id == players.last().id
     fun isGameFinished(): Boolean = currentRound == numberOfRounds
     fun rollDice(): Game {
         val rolled = rerollDice.map { it.roll() }
@@ -33,6 +34,7 @@ data class Game (
     }
 
     fun toggleDice(dice: Dice): Game {
+        if (turnPhase != "REROLLS") return this
         if(keptDice.contains(dice)) return this.copy(keptDice = keptDice - dice, rerollDice = rerollDice + dice)
         if(rerollDice.contains(dice)) return this.copy(keptDice = keptDice + dice, rerollDice = rerollDice - dice)
         return this
@@ -44,18 +46,47 @@ data class Game (
 
     }
 
+    fun startTurn(): Game {
+        return this.rollDice().copy( rerolls = 2, turnPhase = "REROLLS")
+    }
+
+    fun processReroll(): Game {
+        if (rerolls <= 0) return this
+
+        val rolled = this.rollDice()
+        val newRerolls = rerolls - 1
+
+        return if (newRerolls == 0) {
+            rolled.confirmDice().copy(rerolls = 0, turnPhase = "NO_REROLLS")
+        } else {
+            rolled.copy(rerolls = newRerolls)
+        }
+    }
+
+    fun nextStep(): Game {
+        val gameAfterTurn = this.finishTurn()
+
+        return if (this.isRoundFinished()){
+            val winner = gameAfterTurn.getRoundWinner()
+            gameAfterTurn.updatePlayerScore(winner).copy(state = "END_OF_ROUND")
+        } else {
+            gameAfterTurn.copy(turnPhase = "FIRST_ROLL")
+        }
+    }
+
     fun finishTurn(): Game {
         val allDice = keptDice + rerollDice
-        var currentPlayerIndex = players.indexOf(currentPlayer)
+        val currentPlayerIndex = players.indexOfFirst { it.id == currentPlayer.id }
+        if (currentPlayerIndex == -1) return this
+
         val updatedPlayers = players.toMutableList().apply {
             this[currentPlayerIndex] = currentPlayer.copy(currentHand = allDice)
         }
 
-        if(currentPlayer == players.last()) currentPlayerIndex = currentPlayerIndex.dec()
-
+        val nextPlayerIndex = (currentPlayerIndex + 1) % players.size
 
         return this.copy(
-            currentPlayer = players.elementAt(currentPlayerIndex + 1),
+            currentPlayer = updatedPlayers[nextPlayerIndex],
             players = updatedPlayers.toList(),
             rerollDice = allDice,
             keptDice = listOf())
@@ -70,7 +101,8 @@ data class Game (
             players = shiftedPlayers,
             currentPlayer = shiftedPlayers.first(),
             rerollDice = List(5){ index -> Dice(0, "", index + 1).roll()},
-            keptDice = listOf()
+            keptDice = listOf(),
+            turnPhase = "FIRST_ROLL"
         )
     }
 

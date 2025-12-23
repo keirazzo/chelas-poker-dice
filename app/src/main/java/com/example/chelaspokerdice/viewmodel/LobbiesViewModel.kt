@@ -29,7 +29,10 @@ class LobbiesViewModel @Inject constructor(
 
     fun joinLobby(lobby: Lobby){
         viewModelScope.launch {
-            lobbiesRepository.joinLobby(lobby, userRepository.getPlayer())
+            val currentUser = userRepository.getPlayer()
+            if (currentUser.id.isNotEmpty()) {
+                lobbiesRepository.joinLobby(lobby, currentUser)
+            }
         }
     }
 

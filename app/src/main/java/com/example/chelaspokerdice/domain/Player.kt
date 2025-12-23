@@ -1,8 +1,9 @@
 package com.example.chelaspokerdice.domain
 
 data class Player (
+    val id: String = "",
     val name: String = "",
-    val currentHand: List<Dice> = emptyList<Dice>(),
+    val currentHand: List<Dice> = emptyList(),
     val currentHandName: String = "",
     val score: Int = 0,
     val gamesPlayed: Int = 0,

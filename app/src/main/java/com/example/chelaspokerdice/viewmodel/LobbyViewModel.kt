@@ -58,12 +58,26 @@ class LobbyViewModel @Inject constructor(
             lobby.value?.let { currentLobby -> lobbiesRepository.leaveLobby(currentLobby, userRepository.getPlayer()) }
         }
     }
+    fun isHost(): Boolean {
+        val currentUserId = user.value?.id ?: return false
+        return lobby.value?.players?.firstOrNull()?.id == currentUserId
+    }
 
-    suspend fun createGame(name: String, players: List<Player>, numberOfRounds: Int): String{
-        val currentLobby = lobby.value!!
-        val game = Game(name, players, numberOfRounds, players.elementAt(0))
+    suspend fun createGame() {
+        val currentLobby = lobby.value ?: return
+
+        val playersInLobby = currentLobby.players
+        if (playersInLobby.isEmpty()) return
+
+        val game = Game(
+            id = currentLobby.id,
+            name = currentLobby.name,
+            players = playersInLobby,
+            numberOfRounds = currentLobby.numberOfRounds,
+            currentPlayer = playersInLobby.first()
+        )
+
         gameRepository.saveGame(game)
         lobbiesRepository.startGame(currentLobby.id)
-        return game.id
     }
 }

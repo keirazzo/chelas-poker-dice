@@ -1,12 +1,10 @@
 package com.example.chelaspokerdice.repository
 
-import androidx.compose.runtime.snapshotFlow
 import com.example.chelaspokerdice.domain.Game
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -16,24 +14,8 @@ interface GameRepository {
     suspend fun saveGame(game: Game)
 }
 
-class FakeGameRepository : GameRepository {
-    private val games = mutableMapOf<String, MutableStateFlow<Game?>>()
-
-    override fun getGame(gameId: String): Flow<Game?> {
-        return games.getOrPut(gameId){ MutableStateFlow(null)}
-    }
-
-    override suspend fun saveGame(game: Game) {
-        val flow = games.getOrPut(game.id) {MutableStateFlow(null)}
-        flow.value = game
-    }
-
-
-
-}
-
 class FireStoreGameRepository @Inject constructor(
-    private val db: FirebaseFirestore
+    db: FirebaseFirestore
 ): GameRepository {
     private val games = db.collection("games")
 
@@ -54,3 +36,16 @@ class FireStoreGameRepository @Inject constructor(
         games.document(game.id).set(game).await()
     }
 }
+
+//class FakeGameRepository : GameRepository {
+//    private val games = mutableMapOf<String, MutableStateFlow<Game?>>()
+//
+//    override fun getGame(gameId: String): Flow<Game?> {
+//        return games.getOrPut(gameId){ MutableStateFlow(null)}
+//    }
+//
+//    override suspend fun saveGame(game: Game) {
+//        val flow = games.getOrPut(game.id) {MutableStateFlow(null)}
+//        flow.value = game
+//    }
+//}

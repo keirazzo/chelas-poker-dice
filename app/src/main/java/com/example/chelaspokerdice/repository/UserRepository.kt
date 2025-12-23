@@ -7,6 +7,8 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlin.random.Random
 
 interface UserRepository {
@@ -18,21 +20,23 @@ interface UserRepository {
 private val Context.dataStore by preferencesDataStore(name = "user_prefs")
 
 class DataStoreUserRepository(private val context: Context): UserRepository {
-
+    private val mutex = Mutex()
     private val gson = Gson()
-    private val USER_KEY = stringPreferencesKey("user_data")
+    private val userKey = stringPreferencesKey("user_data")
 
-    override suspend fun getPlayer(): Player {
+    override suspend fun getPlayer(): Player = mutex.withLock {
         val prefs = context.dataStore.data.first()
-        val json = prefs[USER_KEY]
+        val json = prefs[userKey]
 
         return if (json != null) {
             gson.fromJson(json, Player::class.java)
         } else {
+            val newId = java.util.UUID.randomUUID().toString()
             val uniqueName = "Player_${Random.nextInt(1000, 9999)}"
-            val newPlayer = Player(name = uniqueName)
+            val newPlayer = Player(id = newId, name = uniqueName)
 
-            savePlayer(newPlayer)
+            val jsonToSave = gson.toJson(newPlayer)
+            context.dataStore.edit { it[userKey] = jsonToSave }
             newPlayer
         }
     }
@@ -40,7 +44,7 @@ class DataStoreUserRepository(private val context: Context): UserRepository {
     override suspend fun savePlayer(player: Player) {
         context.dataStore.edit { prefs ->
             val json = gson.toJson(player)
-            prefs[USER_KEY] = json
+            prefs[userKey] = json
         }
     }
 

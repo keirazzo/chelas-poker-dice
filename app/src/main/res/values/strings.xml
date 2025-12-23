@@ -32,7 +32,7 @@
     <string name="invalid_number_of_rounds">Please enter a number between 1 and 60.</string>
 
     <string name="loading">Loading…</string>
-    <string name="leave_lobby">LEAVE</string>
+    <string name="lobby_leave">LEAVE</string>
     <string name="lobby_number_of_rounds">Number of rounds: %1$d</string>
     <string name="lobby_players">Players: %1$d/%2$d</string>
 
@@ -42,4 +42,15 @@
     <string name="roll">ROLL</string>
     <string name="reroll">REROLL</string>
     <string name="confirm">CONFIRM</string>
+    <string name="leave_match">Leave Match?</string>
+    <string name="leave_match_warning">If you leave the game now, you will be removed from the lobby</string>
+    <string name="leave">Leave</string>
+    <string name="stay">Stay</string>
+    <string name="your_turn">Your turn!</string>
+    <string name="end_of_round">End of round %1$d</string>
+    <string name="winner">Winner: %1$s</string>
+    <string name="leave_lobby">LEAVE</string>
+    <string name="new_game">New game</string>
+
+
 </resources>

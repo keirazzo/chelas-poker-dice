@@ -1,6 +1,7 @@
 package com.example.chelaspokerdice.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,6 +11,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -39,6 +41,7 @@ fun LobbyScreen (onNavigate: (LobbyScreenNavigationIntent) -> Unit = {}){
     val viewModel = hiltViewModel<LobbyViewModel>()
     val lobby by viewModel.lobby.collectAsState()
     val lobbyState by viewModel.state.collectAsState()
+    val user by viewModel.user.collectAsState()
 
     BackHandler {
         viewModel.leaveLobby()
@@ -46,12 +49,22 @@ fun LobbyScreen (onNavigate: (LobbyScreenNavigationIntent) -> Unit = {}){
     }
 
     LaunchedEffect(lobbyState) {
-        if (lobbyState is LobbyState.Full){
-            val gameId = viewModel.createGame(lobby?.name ?: "", lobby?.players ?: listOf(),
-                lobby?.numberOfRounds ?: 0
-            )
-            onNavigate(LobbyScreenNavigationIntent.NavigateToGame(gameId))
+        if (lobbyState is LobbyState.Full && viewModel.isHost()) {
+            viewModel.createGame()
         }
+    }
+
+    LaunchedEffect(lobby?.gameStarted) {
+        if (lobby?.gameStarted == true) {
+            onNavigate(LobbyScreenNavigationIntent.NavigateToGame(lobby!!.id))
+        }
+    }
+
+    if (user == null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text(stringResource(R.string.loading))
+        }
+        return
     }
 
     Column (modifier = Modifier.fillMaxSize()) {
@@ -96,7 +109,7 @@ fun LobbyScreen (onNavigate: (LobbyScreenNavigationIntent) -> Unit = {}){
             viewModel.leaveLobby()
             onNavigate(LobbyScreenNavigationIntent.NavigateToLobbies)},
             modifier = Modifier.align(Alignment.CenterHorizontally).size(250.dp, 75.dp) ) {
-                Text(stringResource(R.string.leave_lobby), style = MaterialTheme.typography.bodyLarge)
+                Text(stringResource(R.string.lobby_leave), style = MaterialTheme.typography.bodyLarge)
             }
 
     }

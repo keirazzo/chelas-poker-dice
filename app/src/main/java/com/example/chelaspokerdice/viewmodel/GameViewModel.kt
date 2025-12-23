@@ -7,6 +7,7 @@ import com.example.chelaspokerdice.domain.Dice
 import com.example.chelaspokerdice.domain.Game
 import com.example.chelaspokerdice.domain.Player
 import com.example.chelaspokerdice.repository.GameRepository
+import com.example.chelaspokerdice.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +32,7 @@ sealed interface TurnState {
 @HiltViewModel
 class GameViewModel @Inject constructor(
     private val gameRepository: GameRepository,
+    private val userRepository: UserRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val gameId: String = savedStateHandle.get<String>("gameId") ?: ""
@@ -45,79 +47,71 @@ class GameViewModel @Inject constructor(
     private val _turnState = MutableStateFlow<TurnState>(TurnState.FirstRoll)
     val turnState: StateFlow<TurnState> = _turnState.asStateFlow()
 
+    private val _currentUser = MutableStateFlow<Player?>(null)
+    val currentUser = _currentUser.asStateFlow()
+    init {
+        viewModelScope.launch {
+            _currentUser.value = userRepository.getPlayer()
+        }
+    }
+    fun isMyTurn(): Boolean {
+        val gameData = game.value
+        val userData = _currentUser.value
 
-    private val _gameState = MutableStateFlow<GameState>(GameState.PlayingRound)
-    val gameState: StateFlow<GameState> = _gameState.asStateFlow()
+        val currentId = gameData?.currentPlayer?.id
+        val myId = userData?.id
+
+        return currentId == myId
+    }
+
     fun rollDice(){
+        if (!isMyTurn()) return
         val currentGame = game.value ?: return
 
         viewModelScope.launch {
-            val rolled = currentGame.rollDice()
-            val updatedGame = rolled.copy(rerolls = 2)
-
+            val updatedGame = currentGame.startTurn()
             gameRepository.saveGame(updatedGame)
-            _turnState.value = TurnState.Rerolls
         }
     }
 
-    fun rerollDice(){
+    fun rerollDice() {
         val currentGame = game.value ?: return
+        if (!isMyTurn() || currentGame.rerolls <= 0) return
+
         viewModelScope.launch {
-            if (currentGame.rerolls > 0) {
-                val rolled = currentGame.rollDice()
-                var updatedGame = rolled.copy(rerolls = currentGame.rerolls.dec())
-                if (updatedGame.rerolls == 0) {
-                    updatedGame = updatedGame.confirmDice()
-                    _turnState.value = TurnState.NoRerolls
-                }
-                gameRepository.saveGame(updatedGame)
-            }
-            else _turnState.value = TurnState.NoRerolls
+            val updatedGame = currentGame.processReroll()
+            gameRepository.saveGame(updatedGame)
         }
     }
 
     fun toggleDice(dice: Dice) {
+        if (!isMyTurn()) return
         val currentGame = game.value ?: return
         viewModelScope.launch {
-            if (_turnState.value == TurnState.Rerolls) {
-                val updatedGame = currentGame.toggleDice(dice)
-                gameRepository.saveGame(updatedGame)
-            }
+            val updatedGame = currentGame.toggleDice(dice)
+            if (updatedGame != currentGame) gameRepository.saveGame(updatedGame)
+
         }
     }
 
     fun confirmHand(){
+        if (!isMyTurn()) return
         val currentGame = game.value ?: return
-        viewModelScope.launch {
-            val updatedGame = currentGame.finishTurn()
-            gameRepository.saveGame(updatedGame)
 
-            if (currentGame.isRoundFinished()){
-                val roundWinner = updatedGame.getRoundWinner()
-                val gameWithScore = updatedGame.updatePlayerScore(roundWinner)
-                gameRepository.saveGame(gameWithScore)
-                _gameState.value = GameState.EndOfRound
+        viewModelScope.launch {
+            val nextState = currentGame.nextStep()
+            gameRepository.saveGame(nextState)
+
+            if (nextState.state == "END_OF_ROUND") {
                 delay(5000)
-
-                if(gameWithScore.isGameFinished()) _gameState.value = GameState.EndOfGame
-                else {
-                    val nextRoundGame = gameWithScore.finishRound()
-                    gameRepository.saveGame(nextRoundGame)
-                    _gameState.value = GameState.PlayingRound
-                    _turnState.value = TurnState.FirstRoll
+                if (nextState.isGameFinished()) {
+                    gameRepository.saveGame(nextState.copy(state = "END_OF_GAME"))
+                } else {
+                    gameRepository.saveGame(nextState.finishRound().copy(state = "PLAYING"))
                 }
-            } else _turnState.value = TurnState.FirstRoll
+            }
         }
     }
-
-    fun updateScore(player: Player){
-        val currentGame = game.value ?: return
-        viewModelScope.launch {
-            val updatedGame = currentGame.updatePlayerScore(player)
-            gameRepository.saveGame(updatedGame)
-        }
-    }
-
     fun leaveGame(){
         val currentGame = game.value ?: return
 
