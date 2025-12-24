@@ -18,6 +18,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +43,12 @@ fun GameScreen(onNavigate: (GameScreenNavigationIntent) -> Unit = {}) {
     val viewModel = hiltViewModel<GameViewModel>()
     val currentGame by viewModel.game.collectAsState()
     val currentUser by viewModel.currentUser.collectAsState()
+
+    LaunchedEffect(currentGame?.state) {
+        if (currentGame?.state == "LOBBY") {
+            onNavigate(GameScreenNavigationIntent.NavigateToLobby)
+        }
+    }
 
     if (currentGame == null || currentUser == null) {
         Column(
@@ -206,8 +213,18 @@ fun GameScreen(onNavigate: (GameScreenNavigationIntent) -> Unit = {}) {
                 sortedPlayers.forEach { player -> Text("${player.score}    ${player.name}") }
 
                 Row {
-                    Button(onClick = { onNavigate(GameScreenNavigationIntent.NavigateToTitle) }) { Text(stringResource(R.string.leave_lobby)) }
-                    Button(onClick = { onNavigate(GameScreenNavigationIntent.NavigateToLobby) }) { Text(stringResource(R.string.new_game)) }
+                    Button(onClick = {
+                        viewModel.leaveGame()
+                        onNavigate(GameScreenNavigationIntent.NavigateToTitle)
+                    }) { Text(stringResource(R.string.leave_lobby)) }
+
+                    if (viewModel.isMyTurn()) {
+                        Button(onClick = {
+                            viewModel.playAgain()
+                        }) {
+                            Text(stringResource(R.string.new_game))
+                        }
+                    }
                 }
             }
         }

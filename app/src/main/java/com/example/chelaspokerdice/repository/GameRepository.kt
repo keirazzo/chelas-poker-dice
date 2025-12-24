@@ -12,6 +12,7 @@ import javax.inject.Inject
 interface GameRepository {
     fun getGame(gameId: String): Flow<Game?>
     suspend fun saveGame(game: Game)
+    suspend fun deleteGame(gameId: String)
 }
 
 class FireStoreGameRepository @Inject constructor(
@@ -34,6 +35,10 @@ class FireStoreGameRepository @Inject constructor(
 
     override suspend fun saveGame(game: Game) {
         games.document(game.id).set(game).await()
+    }
+
+    override suspend fun deleteGame(gameId: String) {
+        games.document(gameId).delete().await()
     }
 }
 

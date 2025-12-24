@@ -22,6 +22,7 @@ interface LobbiesRepository {
     suspend fun addLobby(lobby: Lobby)
     suspend fun joinLobby(lobby: Lobby, player: Player)
     suspend fun leaveLobby(lobby: Lobby, player: Player)
+    suspend fun resetLobby(lobbyId: String)
     suspend fun startGame(lobbyId: String)
 
 }
@@ -82,6 +83,10 @@ class FirestoreLobbiesRepository @Inject constructor( private val db: FirebaseFi
                 "numberOfPlayers", updatedPlayers.size
             ).await()
         }
+    }
+
+    override suspend fun resetLobby(lobbyId: String) {
+        lobbies.document(lobbyId).update("gameStarted", false).await()
     }
 
     override suspend fun startGame(lobbyId: String) {

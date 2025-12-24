@@ -201,4 +201,21 @@ data class Game (
         }?: 0
 
     }
+
+    fun removePlayer(playerId: String): Game {
+        val updatedPlayers = players.filter { it.id != playerId }
+        val newCurrentPlayer = if (currentPlayer.id == playerId && updatedPlayers.isNotEmpty()) {
+            updatedPlayers.first()
+        } else {
+            currentPlayer
+        }
+        return this.copy(players = updatedPlayers, currentPlayer = newCurrentPlayer)
+    }
+
+    fun prepareForLobby(): Game {
+        return this.copy(
+            state = "LOBBY",
+            players = players.map { it.copy(score = 0, currentHand = listOf()) }
+        )
+    }
 }

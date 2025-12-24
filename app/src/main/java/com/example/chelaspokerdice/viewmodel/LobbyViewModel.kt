@@ -53,6 +53,13 @@ class LobbyViewModel @Inject constructor(
             initialValue = null
         )
 
+    val game: StateFlow<Game?> = gameRepository.getGame(lobbyId)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = null
+        )
+
     fun leaveLobby(){
         viewModelScope.launch {
             lobby.value?.let { currentLobby -> lobbiesRepository.leaveLobby(currentLobby, userRepository.getPlayer()) }
@@ -63,21 +70,25 @@ class LobbyViewModel @Inject constructor(
         return lobby.value?.players?.firstOrNull()?.id == currentUserId
     }
 
-    suspend fun createGame() {
+    fun createGame() {
         val currentLobby = lobby.value ?: return
+        if (!isHost()) return
 
-        val playersInLobby = currentLobby.players
-        if (playersInLobby.isEmpty()) return
+        viewModelScope.launch {
+            val playersInLobby = currentLobby.players
+            if (playersInLobby.isEmpty()) return@launch
 
-        val game = Game(
-            id = currentLobby.id,
-            name = currentLobby.name,
-            players = playersInLobby,
-            numberOfRounds = currentLobby.numberOfRounds,
-            currentPlayer = playersInLobby.first()
-        )
+            val game = Game(
+                id = currentLobby.id,
+                name = currentLobby.name,
+                players = playersInLobby,
+                numberOfRounds = currentLobby.numberOfRounds,
+                currentPlayer = playersInLobby.first(),
+                state = "PLAYING"
+            )
 
-        gameRepository.saveGame(game)
-        lobbiesRepository.startGame(currentLobby.id)
+            gameRepository.saveGame(game)
+            lobbiesRepository.startGame(currentLobby.id)
+        }
     }
 }

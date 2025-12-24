@@ -7,6 +7,7 @@ import com.example.chelaspokerdice.domain.Dice
 import com.example.chelaspokerdice.domain.Game
 import com.example.chelaspokerdice.domain.Player
 import com.example.chelaspokerdice.repository.GameRepository
+import com.example.chelaspokerdice.repository.LobbiesRepository
 import com.example.chelaspokerdice.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -33,6 +34,7 @@ sealed interface TurnState {
 class GameViewModel @Inject constructor(
     private val gameRepository: GameRepository,
     private val userRepository: UserRepository,
+    private val lobbiesRepository: LobbiesRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val gameId: String = savedStateHandle.get<String>("gameId") ?: ""
@@ -53,6 +55,10 @@ class GameViewModel @Inject constructor(
         viewModelScope.launch {
             _currentUser.value = userRepository.getPlayer()
         }
+    }
+
+    fun isHost(): Boolean {
+        return game.value?.players?.firstOrNull()?.id == currentUser.value?.id
     }
     fun isMyTurn(): Boolean {
         val gameData = game.value
@@ -112,8 +118,40 @@ class GameViewModel @Inject constructor(
             }
         }
     }
-    fun leaveGame(){
+    fun leaveGame() {
         val currentGame = game.value ?: return
+        val user = _currentUser.value ?: return
 
+        viewModelScope.launch {
+            try {
+                val player = userRepository.getPlayer()
+
+                val lobby = lobbiesRepository.getLobby(currentGame.id)
+                if (lobby != null) {
+                    lobbiesRepository.leaveLobby(lobby, player)
+                }
+
+                val updatedGame = currentGame.removePlayer(user.id)
+                if (updatedGame.players.isEmpty()) {
+                    gameRepository.deleteGame(currentGame.id)
+                } else {
+                    gameRepository.saveGame(updatedGame)
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("GameViewModel", "Error leaving game", e)
+            }
+        }
+    }
+
+    fun playAgain() {
+        val currentGame = game.value ?: return
+        if (!isHost()) return
+
+        viewModelScope.launch {
+            lobbiesRepository.resetLobby(currentGame.id)
+
+            val updatedGame = currentGame.prepareForLobby()
+            gameRepository.saveGame(updatedGame)
+        }
     }
 }

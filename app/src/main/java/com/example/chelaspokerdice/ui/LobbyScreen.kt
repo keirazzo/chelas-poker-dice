@@ -42,20 +42,15 @@ fun LobbyScreen (onNavigate: (LobbyScreenNavigationIntent) -> Unit = {}){
     val lobby by viewModel.lobby.collectAsState()
     val lobbyState by viewModel.state.collectAsState()
     val user by viewModel.user.collectAsState()
+    val gameByLobbyId by viewModel.game.collectAsState()
 
     BackHandler {
         viewModel.leaveLobby()
         onNavigate(LobbyScreenNavigationIntent.NavigateToLobbies)
     }
 
-    LaunchedEffect(lobbyState) {
-        if (lobbyState is LobbyState.Full && viewModel.isHost()) {
-            viewModel.createGame()
-        }
-    }
-
     LaunchedEffect(lobby?.gameStarted) {
-        if (lobby?.gameStarted == true) {
+        if (lobby?.gameStarted == true || gameByLobbyId?.state == "PLAYING") {
             onNavigate(LobbyScreenNavigationIntent.NavigateToGame(lobby!!.id))
         }
     }
@@ -105,12 +100,34 @@ fun LobbyScreen (onNavigate: (LobbyScreenNavigationIntent) -> Unit = {}){
             Text(player.name,
                 modifier = Modifier.padding(start = 25.dp, bottom = 5.dp))
         }
+
+        if (lobbyState is LobbyState.Full) {
+            if (viewModel.isHost()) {
+                Button(
+                    onClick = { viewModel.createGame() },
+                    modifier = Modifier.align(Alignment.CenterHorizontally).padding(10.dp).size(250.dp, 75.dp)
+                ) {
+                    Text(stringResource(R.string.start_match), style = MaterialTheme.typography.bodyLarge)
+                }
+            } else {
+                Text(
+                    "Waiting for game to start...",
+                    modifier = Modifier.padding(10.dp),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                CircularProgressIndicator(modifier = Modifier.size(30.dp))
+            }
+        }
+
         Button(onClick = {
             viewModel.leaveLobby()
             onNavigate(LobbyScreenNavigationIntent.NavigateToLobbies)},
             modifier = Modifier.align(Alignment.CenterHorizontally).size(250.dp, 75.dp) ) {
                 Text(stringResource(R.string.lobby_leave), style = MaterialTheme.typography.bodyLarge)
             }
+
+
 
     }
 
