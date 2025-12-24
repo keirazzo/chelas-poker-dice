@@ -105,6 +105,9 @@ class GameViewModel @Inject constructor(
         val currentGame = game.value ?: return
 
         viewModelScope.launch {
+            val currentHandDice = currentGame.keptDice + currentGame.rerollDice
+            val handName = currentGame.getHandType(currentHandDice).type
+            updatePlayerStatsAfterRound(handName)
             val nextState = currentGame.nextStep()
             gameRepository.saveGame(nextState)
 
@@ -116,6 +119,41 @@ class GameViewModel @Inject constructor(
                     gameRepository.saveGame(nextState.finishRound().copy(state = "PLAYING"))
                 }
             }
+        }
+    }
+
+    private suspend fun updatePlayerStatsAfterRound(handName: String) {
+        val user = _currentUser.value ?: return
+
+        val newFrequency = user.handFrequency.toMutableMap()
+        newFrequency[handName] = (newFrequency[handName] ?: 0) + 1
+
+        val updatedPlayer = user.copy(handFrequency = newFrequency)
+
+        _currentUser.value = updatedPlayer
+        userRepository.savePlayer(updatedPlayer)
+    }
+
+    private var statsUpdated = false
+
+    fun updateFinalStats() {
+        val currentGame = game.value ?: return
+        val user = _currentUser.value ?: return
+
+        if (statsUpdated) return
+
+        viewModelScope.launch {
+            val winner = currentGame.players.maxByOrNull { it.score }
+            val isWinner = winner?.id == user.id
+
+            val updatedPlayer = user.copy(
+                gamesPlayed = user.gamesPlayed + 1,
+                gamesWon = if (isWinner) user.gamesWon + 1 else user.gamesWon
+            )
+
+            _currentUser.value = updatedPlayer
+            userRepository.savePlayer(updatedPlayer)
+            statsUpdated = true
         }
     }
     fun leaveGame() {

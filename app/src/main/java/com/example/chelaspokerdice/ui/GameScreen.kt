@@ -48,6 +48,9 @@ fun GameScreen(onNavigate: (GameScreenNavigationIntent) -> Unit = {}) {
         if (currentGame?.state == "LOBBY") {
             onNavigate(GameScreenNavigationIntent.NavigateToLobby)
         }
+        if (currentGame?.state == "END_OF_GAME") {
+            viewModel.updateFinalStats()
+        }
     }
 
     if (currentGame == null || currentUser == null) {

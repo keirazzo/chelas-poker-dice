@@ -8,7 +8,7 @@ data class Player (
     val score: Int = 0,
     val gamesPlayed: Int = 0,
     val gamesWon: Int = 0,
-    val handFrequency: Map<String, Int> = HandType.entries.associate { it.name to 0  }
+    val handFrequency: Map<String, Int> = emptyMap()
 ){
     fun handIsEmpty(): Boolean = currentHand == emptyList<Dice>()
 }
