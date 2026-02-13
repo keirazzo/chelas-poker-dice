@@ -54,6 +54,11 @@ class GameViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             _currentUser.value = userRepository.getPlayer()
+
+            if (gameId == "SOLO"){
+                val soloGame = Game("Solo", listOf(currentUser.value, Player("ai", "Joe")) as List<Player>, 5, currentUser.value!!, id = "SOLO")
+                gameRepository.saveGame(soloGame)
+            }
         }
     }
 

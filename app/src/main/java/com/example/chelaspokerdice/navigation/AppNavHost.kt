@@ -37,6 +37,7 @@ fun AppNavHost(){
 
         composable(AppScreen.Title.name){ TitleScreen(
             onNavigate = { intent -> when (intent) {
+                TitleScreenNavigationIntent.NavigateToSoloGame -> navController.navigate("${AppScreen.Game.name}/SOLO")
                 TitleScreenNavigationIntent.NavigateToLobbies -> navController.navigate(AppScreen.Lobbies.name)
                 TitleScreenNavigationIntent.NavigateToProfile -> navController.navigate(AppScreen.Profile.name)
                 TitleScreenNavigationIntent.NavigateToAbout -> navController.navigate(AppScreen.About.name)

@@ -2,6 +2,8 @@
     <string name="app_name">Chelas Poker Dice</string>
     <string name="app_title">Chelas\nPoker Dice</string>
     <string name="start_match">START MATCH</string>
+    <string name="solo">Play Solo</string>
+    <string name="multiplayer">Play with Friends</string>
     <string name="profile">Profile</string>
     <string name="about">About</string>
 

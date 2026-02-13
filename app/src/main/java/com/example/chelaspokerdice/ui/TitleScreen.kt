@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.example.chelaspokerdice.R
 
 enum class TitleScreenNavigationIntent {
+    NavigateToSoloGame,
     NavigateToLobbies,
     NavigateToProfile,
     NavigateToAbout
@@ -41,7 +42,15 @@ fun TitleScreen(onNavigate: (TitleScreenNavigationIntent) -> Unit = { }) {
             modifier = Modifier
                 .padding(top = 50.dp)
                 .size(250.dp, 75.dp)) {
-            Text(text = stringResource(R.string.start_match),
+            Text(text = stringResource(R.string.multiplayer),
+                style = MaterialTheme.typography.bodyLarge)
+        }
+
+        Button(onClick = {onNavigate(TitleScreenNavigationIntent.NavigateToSoloGame)},
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .size(250.dp, 75.dp)) {
+            Text(text = stringResource(R.string.solo),
                 style = MaterialTheme.typography.bodyLarge)
         }
 
